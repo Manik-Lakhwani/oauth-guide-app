@@ -1,0 +1,254 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OAuthSetupGuide",
+  "description": "Output of the investigation agent. Every claim must point to an evidence entry.",
+  "type": "object",
+  "required": ["app", "summary", "blockers", "steps", "scopes", "if_stuck", "agent_vs_you", "evidence", "tests", "unknowns"],
+  "definitions": {
+    "evidence_ids": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^E[0-9]+$" },
+      "minItems": 1
+    },
+    "owner": { "type": "string", "enum": ["agent", "you", "your_admin", "provider"] }
+  },
+  "properties": {
+    "app": {
+      "type": "object",
+      "required": ["name", "website", "developer_docs_url", "generated_at"],
+      "properties": {
+        "name": { "type": "string" },
+        "website": { "type": "string" },
+        "developer_docs_url": { "type": ["string", "null"], "description": "Null if no official docs were found" },
+        "generated_at": { "type": "string", "format": "date-time" },
+        "oauth_supported": { "type": "string", "enum": ["yes", "no", "unclear"] }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["headline", "type", "difficulty", "difficulty_factors", "setup_effort", "approval_wait", "can_start_today", "confidence"],
+      "properties": {
+        "headline": { "type": "string", "maxLength": 200, "description": "One sentence a busy developer can act on" },
+        "type": {
+          "type": "string",
+          "enum": ["self_serve", "review_gated", "partner_or_paid_gated", "tenant_bound", "mcp_hosted", "unclassified"],
+          "description": "Primary type. If two apply, pick the harder one."
+        },
+        "type_note": { "type": "string", "description": "E.g. 'Test mode is self-serve; production needs review'" },
+        "difficulty": { "type": "string", "enum": ["easy", "moderate", "hard", "gated", "unknown"] },
+        "difficulty_factors": {
+          "type": "array",
+          "description": "Five factors, each scored 0-2. Total maps to difficulty.",
+          "minItems": 5,
+          "maxItems": 5,
+          "items": {
+            "type": "object",
+            "required": ["factor", "score", "reason", "evidence_ids"],
+            "properties": {
+              "factor": { "type": "string", "enum": ["registration", "review", "wait_time", "cost_or_access", "human_dependency"] },
+              "score": { "type": "integer", "minimum": 0, "maximum": 2 },
+              "reason": { "type": "string" },
+              "evidence_ids": { "$ref": "#/definitions/evidence_ids" }
+            }
+          }
+        },
+        "setup_effort": {
+          "type": "object",
+          "required": ["estimate", "basis"],
+          "properties": {
+            "estimate": { "type": "string", "description": "e.g. '30-60 minutes of hands-on work'" },
+            "basis": { "type": "string", "enum": ["tested", "official", "community", "inferred", "unknown"] },
+            "evidence_ids": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "approval_wait": {
+          "type": "object",
+          "required": ["label", "basis"],
+          "properties": {
+            "label": { "type": "string", "description": "e.g. 'None found', '2-6 weeks (community-reported)', 'Unknown'" },
+            "min_days": { "type": ["integer", "null"] },
+            "max_days": { "type": ["integer", "null"] },
+            "basis": { "type": "string", "enum": ["official", "community", "inferred", "unknown"] },
+            "evidence_ids": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "can_start_today": {
+          "type": "object",
+          "required": ["answer", "reason"],
+          "properties": {
+            "answer": { "type": "string", "enum": ["yes", "partly", "no"] },
+            "reason": { "type": "string" }
+          }
+        },
+        "confidence": {
+          "type": "object",
+          "required": ["level", "reason"],
+          "properties": {
+            "level": { "type": "string", "enum": ["high", "medium", "low"] },
+            "reason": { "type": "string" }
+          }
+        }
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["title", "severity", "detail", "evidence_ids"],
+        "properties": {
+          "title": { "type": "string" },
+          "severity": { "type": "string", "enum": ["blocking", "slows_you_down", "minor"] },
+          "detail": { "type": "string" },
+          "workaround": { "type": ["string", "null"] },
+          "evidence_ids": { "$ref": "#/definitions/evidence_ids" }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["order", "title", "action", "owner", "agent_status", "evidence_ids"],
+        "properties": {
+          "order": { "type": "integer", "minimum": 1 },
+          "stage": { "type": "string", "enum": ["setup", "testing", "review_submission", "post_approval"] },
+          "title": { "type": "string" },
+          "action": { "type": "string", "description": "Plain-language instruction" },
+          "url": { "type": ["string", "null"] },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "guidance"],
+              "properties": {
+                "name": { "type": "string" },
+                "guidance": { "type": "string", "description": "What to enter, or a ready-to-paste draft" }
+              }
+            }
+          },
+          "owner": { "$ref": "#/definitions/owner" },
+          "agent_status": {
+            "type": "string",
+            "enum": ["done_by_agent", "agent_can_do", "agent_can_draft", "human_only"],
+            "description": "done_by_agent means the agent actually did or probed it; do not use for anything only read from docs."
+          },
+          "why_human_only": { "type": ["string", "null"], "description": "Required when agent_status is human_only" },
+          "evidence_ids": { "$ref": "#/definitions/evidence_ids" }
+        }
+      }
+    },
+    "scopes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["scope", "purpose", "triggers_extra_review", "evidence_ids"],
+        "properties": {
+          "scope": { "type": "string" },
+          "purpose": { "type": "string" },
+          "triggers_extra_review": { "type": "string", "enum": ["yes", "no", "unknown"] },
+          "recommended_for_common_use": { "type": "boolean" },
+          "evidence_ids": { "$ref": "#/definitions/evidence_ids" }
+        }
+      }
+    },
+    "if_stuck": {
+      "type": "object",
+      "required": ["common_rejection_reasons", "contacts", "message_template"],
+      "properties": {
+        "common_rejection_reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["reason", "fix", "evidence_ids"],
+            "properties": {
+              "reason": { "type": "string" },
+              "fix": { "type": "string" },
+              "evidence_ids": { "$ref": "#/definitions/evidence_ids" }
+            }
+          }
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "url"],
+            "properties": { "label": { "type": "string" }, "url": { "type": "string" } }
+          }
+        },
+        "message_template": {
+          "type": "object",
+          "required": ["subject", "body"],
+          "properties": {
+            "subject": { "type": "string" },
+            "body": { "type": "string", "description": "Uses {{placeholders}} for developer-specific details" }
+          }
+        }
+      }
+    },
+    "agent_vs_you": {
+      "type": "object",
+      "required": ["agent_did", "agent_can_do_next", "you_must"],
+      "properties": {
+        "agent_did": { "type": "array", "items": { "type": "string" }, "description": "Only things actually performed in this run" },
+        "agent_can_do_next": { "type": "array", "items": { "type": "string" } },
+        "you_must": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["task", "reason"],
+            "properties": { "task": { "type": "string" }, "reason": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claim", "tag", "retrieved_at"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^E[0-9]+$" },
+          "claim": { "type": "string" },
+          "tag": { "type": "string", "enum": ["tested", "official", "community", "inferred", "unknown"] },
+          "source_url": { "type": ["string", "null"] },
+          "source_note": { "type": "string", "description": "Paraphrase of what the source says. No long quotes." },
+          "inferred_from": { "type": "array", "items": { "type": "string" }, "description": "Evidence ids. Required when tag is inferred." },
+          "test_id": { "type": ["string", "null"], "description": "Required when tag is tested" },
+          "retrieved_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "tests": {
+      "type": "array",
+      "description": "Everything the agent attempted, including failures and tests not possible without login.",
+      "items": {
+        "type": "object",
+        "required": ["id", "description", "method", "result", "observed"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^T[0-9]+$" },
+          "description": { "type": "string" },
+          "method": {
+            "type": "string",
+            "enum": ["docs_page_reachable", "registration_page_reachable_without_login", "oauth_discovery_document", "dynamic_client_registration_check", "authorize_endpoint_dummy_client", "token_endpoint_error_shape", "redirect_uri_rule_check", "pricing_page_check", "other_public_probe"]
+          },
+          "request": { "type": "string", "description": "URL and method used" },
+          "result": { "type": "string", "enum": ["confirmed_docs", "contradicted_docs", "inconclusive", "not_possible_without_login", "not_attempted"] },
+          "observed": { "type": "string", "description": "What actually happened, e.g. status code and error shape" }
+        }
+      }
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["question", "why_unknown", "how_to_resolve"],
+        "properties": {
+          "question": { "type": "string" },
+          "why_unknown": { "type": "string" },
+          "how_to_resolve": { "type": "string" }
+        }
+      }
+    }
+  }
+}

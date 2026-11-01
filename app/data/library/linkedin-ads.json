@@ -1,0 +1,492 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "app": {
+    "name": "LinkedIn Ads",
+    "website": "https://business.linkedin.com/marketing-solutions/ads",
+    "developer_docs_url": "https://learn.microsoft.com/en-us/linkedin/marketing/overview",
+    "generated_at": "2026-11-01T18:32:00.000Z",
+    "oauth_supported": "yes"
+  },
+  "summary": {
+    "headline": "LinkedIn Ads API provides self-serve Development tier access for testing mapped ad accounts, but requires a formal review submission with a demo video to unlock Standard tier for external users.",
+    "type": "review_gated",
+    "type_note": "Test mode (Development tier) is self-serve once the Advertising API product is added and Ad Accounts are mapped in the Developer Portal; external production usage requires applying and qualifying for the Standard tier.",
+    "difficulty": "hard",
+    "difficulty_factors": [
+      {
+        "factor": "registration",
+        "score": 1,
+        "reason": "Creating a developer app requires an active LinkedIn account and an existing LinkedIn Company Page to link to the application.",
+        "evidence_ids": [
+          "E3",
+          "E4"
+        ]
+      },
+      {
+        "factor": "review",
+        "score": 2,
+        "reason": "Production (Standard tier) requires human review and submission of a demo video showing the app creating, editing, or optimizing LinkedIn campaigns.",
+        "evidence_ids": [
+          "E4",
+          "E5"
+        ]
+      },
+      {
+        "factor": "wait_time",
+        "score": 1,
+        "reason": "Initial Development tier access is immediate upon product request, but Standard tier approval turnaround time is not officially published.",
+        "evidence_ids": [
+          "E4",
+          "E5"
+        ]
+      },
+      {
+        "factor": "cost_or_access",
+        "score": 1,
+        "reason": "The Advertising API is open to approved developers without platform fees, but requires an active LinkedIn Ad Account with appropriate administrative roles.",
+        "evidence_ids": [
+          "E3",
+          "E4",
+          "E5"
+        ]
+      },
+      {
+        "factor": "human_dependency",
+        "score": 2,
+        "reason": "A human reviewer must manually evaluate the application and review the video demonstration before Standard tier access is granted.",
+        "evidence_ids": [
+          "E4"
+        ]
+      }
+    ],
+    "setup_effort": {
+      "estimate": "1 to 2 hours to create the app, link company page, configure OAuth, and map test Ad Accounts; several days if producing video for Standard tier",
+      "basis": "inferred",
+      "evidence_ids": [
+        "E2",
+        "E3",
+        "E4"
+      ]
+    },
+    "approval_wait": {
+      "label": "Unknown (not published in official documentation)",
+      "min_days": null,
+      "max_days": null,
+      "basis": "unknown",
+      "evidence_ids": [
+        "E4"
+      ]
+    },
+    "can_start_today": {
+      "answer": "partly",
+      "reason": "You can immediately register an app, add the Advertising API product, map developer Ad Accounts, and test 3-legged OAuth flows in the Development tier today; connecting general external users requires Standard tier review approval."
+    },
+    "confidence": {
+      "level": "high",
+      "reason": "Official Microsoft Learn LinkedIn Marketing documentation and live OAuth 2.0 endpoints were probed directly, confirming the exact endpoints, tiers, scopes, and review requirements."
+    }
+  },
+  "blockers": [
+    {
+      "title": "LinkedIn Company Page Required",
+      "severity": "blocking",
+      "detail": "Creating an application in the LinkedIn Developer Portal requires linking an existing LinkedIn Company Page (Organization) where you hold an administrator role.",
+      "workaround": "Create a free LinkedIn Company Page via the LinkedIn web interface before registering the app.",
+      "evidence_ids": [
+        "E3",
+        "E4"
+      ]
+    },
+    {
+      "title": "Ad Account ID Mapping Needed for Development Tier",
+      "severity": "slows_you_down",
+      "detail": "In the Development tier, your application can only query and manage Ad Accounts that have been explicitly added under the app's Products tab using the 9-digit Ad Account ID.",
+      "workaround": "Copy your 9-digit Ad Account ID from Campaign Manager and add it via Developer Portal -> Products -> View Ad Accounts -> Add Ad Account.",
+      "evidence_ids": [
+        "E4"
+      ]
+    },
+    {
+      "title": "Demo Video Required for Standard Tier Production Access",
+      "severity": "blocking",
+      "detail": "To upgrade from Development tier to Standard tier (allowing any LinkedIn user to connect their ad accounts), you must submit a tier upgrade request including a video demonstrating how your platform creates, edits, or optimizes campaigns.",
+      "workaround": "Build and fully test your integration within the Development tier using mapped test accounts first, then record the demo video.",
+      "evidence_ids": [
+        "E4"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "stage": "setup",
+      "title": "Create a LinkedIn Company Page",
+      "action": "Ensure you have an existing LinkedIn Company Page where you are an Administrator. If you do not have one, create a Company Page via LinkedIn.",
+      "url": "https://www.linkedin.com/company/setup/new/",
+      "fields": [],
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires an authenticated LinkedIn user account and organization details.",
+      "evidence_ids": [
+        "E3",
+        "E4"
+      ]
+    },
+    {
+      "order": 2,
+      "stage": "setup",
+      "title": "Register Application on LinkedIn Developer Portal",
+      "action": "Navigate to the LinkedIn Developer Portal, click 'Create App', provide an App Name, associate your LinkedIn Company Page, upload an App Logo, and agree to the Developer API Terms of Use.",
+      "url": "https://www.linkedin.com/developers/apps/new",
+      "fields": [
+        {
+          "name": "App name",
+          "guidance": "Enter your product or AI agent integration name"
+        },
+        {
+          "name": "LinkedIn Page",
+          "guidance": "Select your verified LinkedIn Company Page URL or name"
+        },
+        {
+          "name": "App logo",
+          "guidance": "Upload a square image (minimum 100x100px)"
+        }
+      ],
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires personal LinkedIn authentication and acceptance of legal terms.",
+      "evidence_ids": [
+        "E2",
+        "E4"
+      ]
+    },
+    {
+      "order": 3,
+      "stage": "setup",
+      "title": "Configure OAuth 2.0 Redirect URLs",
+      "action": "Go to the 'Auth' tab of your application in the LinkedIn Developer Portal. Note your Client ID and Client Secret, and register your absolute HTTPS redirect callback URLs under OAuth 2.0 settings.",
+      "url": "https://www.linkedin.com/developers/apps",
+      "fields": [
+        {
+          "name": "Authorized redirect URLs for your app",
+          "guidance": "Absolute HTTPS callback URL (e.g., https://yourdomain.com/api/auth/linkedin/callback). Cannot contain URL fragments (#) or query parameters."
+        }
+      ],
+      "owner": "you",
+      "agent_status": "agent_can_draft",
+      "why_human_only": null,
+      "evidence_ids": [
+        "E2"
+      ]
+    },
+    {
+      "order": 4,
+      "stage": "setup",
+      "title": "Add Advertising API Product",
+      "action": "Navigate to the 'Products' tab within your app in the LinkedIn Developer Portal. Find 'Advertising API' (or 'Marketing Developer Platform') and submit the request to add it to your app. Access is provisioned in the Development tier.",
+      "url": "https://www.linkedin.com/developers/apps",
+      "fields": [],
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Must be performed within the authenticated LinkedIn Developer Portal UI.",
+      "evidence_ids": [
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "order": 5,
+      "stage": "testing",
+      "title": "Map Test Ad Accounts to Development Tier",
+      "action": "In Campaign Manager, copy your nine-digit Ad Account ID. In the Developer Portal under the app's Products tab, click 'View Ad Accounts', choose 'Add Ad Account', enter the ID, and save.",
+      "url": "https://www.linkedin.com/campaignmanager/",
+      "fields": [
+        {
+          "name": "Ad Account ID",
+          "guidance": "Nine-digit Sponsored Account ID copied from Campaign Manager"
+        }
+      ],
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires Campaign Manager access and Developer Portal settings modification.",
+      "evidence_ids": [
+        "E3",
+        "E4"
+      ]
+    },
+    {
+      "order": 6,
+      "stage": "testing",
+      "title": "Implement and Test 3-Legged OAuth Flow",
+      "action": "Initiate authorization redirect to https://www.linkedin.com/oauth/v2/authorization with response_type=code, client_id, redirect_uri, and desired scopes (e.g. r_ads, r_ads_reporting). Exchange authorization code for token at https://www.linkedin.com/oauth/v2/accessToken.",
+      "url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+      "fields": [],
+      "owner": "agent",
+      "agent_status": "agent_can_do",
+      "why_human_only": null,
+      "evidence_ids": [
+        "E1",
+        "E2",
+        "E7"
+      ]
+    },
+    {
+      "order": 7,
+      "stage": "review_submission",
+      "title": "Apply for Advertising API Standard Tier",
+      "action": "Once integration is implemented and tested in Development tier, submit a tier upgrade request in the Developer Portal. You must provide a video demo demonstrating how your application creates, edits, or optimizes LinkedIn campaigns.",
+      "url": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start",
+      "fields": [
+        {
+          "name": "Demo Video Link",
+          "guidance": "Public or unlisted video demonstrating campaign creation, management, or reporting workflows"
+        },
+        {
+          "name": "Use Case Description",
+          "guidance": "Detailed explanation of your platform's features and adherence to LinkedIn advertising policies"
+        }
+      ],
+      "owner": "you",
+      "agent_status": "agent_can_draft",
+      "why_human_only": null,
+      "evidence_ids": [
+        "E4",
+        "E5"
+      ]
+    }
+  ],
+  "scopes": [
+    {
+      "scope": "r_ads",
+      "purpose": "Read authenticated member's ad accounts and retrieve sponsored account metadata.",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": true,
+      "evidence_ids": [
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "scope": "r_ads_reporting",
+      "purpose": "Retrieve analytics and reporting metrics for advertising accounts and campaigns.",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": true,
+      "evidence_ids": [
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "scope": "rw_ads",
+      "purpose": "Read and write access to manage ad campaigns, creatives, targeting, and budgets.",
+      "triggers_extra_review": "yes",
+      "recommended_for_common_use": true,
+      "evidence_ids": [
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "scope": "r_organization_admin",
+      "purpose": "Verify administrative permissions on LinkedIn Company Pages associated with ad campaigns.",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": false,
+      "evidence_ids": [
+        "E5"
+      ]
+    },
+    {
+      "scope": "rw_organization_admin",
+      "purpose": "Manage LinkedIn Company Page settings and direct sponsored content.",
+      "triggers_extra_review": "yes",
+      "recommended_for_common_use": false,
+      "evidence_ids": [
+        "E5"
+      ]
+    }
+  ],
+  "if_stuck": {
+    "common_rejection_reasons": [
+      {
+        "reason": "Missing or insufficient video demonstration during Standard tier upgrade request.",
+        "fix": "Record a clear screen recording showing the working user interface, OAuth connection, and active campaign creation/editing/analytics calls against LinkedIn Ads API.",
+        "evidence_ids": [
+          "E4"
+        ]
+      },
+      {
+        "reason": "Target Ad Account not mapped in Development tier resulting in 403 Forbidden errors.",
+        "fix": "Ensure the 9-digit Ad Account ID is added under Developer Portal -> Products -> View Ad Accounts -> Add Ad Account, and the authenticated user has ACCOUNT_BILLING_ADMIN or ACCOUNT_MANAGER permissions.",
+        "evidence_ids": [
+          "E3",
+          "E4"
+        ]
+      },
+      {
+        "reason": "Restricted use case or violating API and data restrictions.",
+        "fix": "Review LinkedIn Marketing API and data policies to verify your tool does not attempt restricted data aggregation, member profiling, or unauthorized targeting.",
+        "evidence_ids": [
+          "E4"
+        ]
+      }
+    ],
+    "contacts": [
+      {
+        "label": "LinkedIn Developer Support Portal",
+        "url": "https://www.linkedin.com/help/lms"
+      },
+      {
+        "label": "Microsoft Learn LinkedIn Marketing Documentation",
+        "url": "https://learn.microsoft.com/en-us/linkedin/marketing/overview"
+      }
+    ],
+    "message_template": {
+      "subject": "Inquiry regarding LinkedIn Advertising API Standard Tier Access for {{app_name}}",
+      "body": "Hello LinkedIn Developer Support Team,\n\nWe have developed and tested an integration with the LinkedIn Advertising API for our platform, {{app_name}} (App ID: {{client_id}}).\n\nWe have tested campaign and reporting workflows in the Development tier using our test Ad Account (ID: {{ad_account_id}}). We have submitted an upgrade request for Standard tier access along with our demonstration video (link: {{demo_video_url}}).\n\nCould you please confirm if any additional technical or compliance information is needed to complete the review of our application?\n\nBest regards,\n{{developer_name}}\n{{company_name}}"
+    }
+  },
+  "agent_vs_you": {
+    "agent_did": [
+      "Probed LinkedIn OAuth 2.0 OpenID discovery document at https://www.linkedin.com/oauth/.well-known/openid-configuration",
+      "Probed LinkedIn OAuth 2.0 authorization endpoint with dummy client ID and verified error shape: 'The passed in client_id is invalid'",
+      "Probed and parsed Microsoft Learn official documentation for LinkedIn Marketing Developer Platform, Quick Start, Increasing Access, and 3-Legged OAuth Flow"
+    ],
+    "agent_can_do_next": [
+      "Draft OAuth 2.0 authorization URL and token exchange handler implementation code",
+      "Draft API request payloads for LinkedIn Ad Accounts, Campaign Management, and Ad Analytics endpoints",
+      "Validate redirect URI formatting and required scope query strings"
+    ],
+    "you_must": [
+      {
+        "task": "Sign in to LinkedIn and verify ownership or admin access on a LinkedIn Company Page",
+        "reason": "LinkedIn Developer Portal requires linking an existing Company Page to register an application."
+      },
+      {
+        "task": "Create the app in the LinkedIn Developer Portal and retrieve Client ID and Client Secret",
+        "reason": "Creating apps and accessing secret credentials cannot be automated without user authentication."
+      },
+      {
+        "task": "Add the Advertising API product and map your 9-digit Ad Account ID",
+        "reason": "Development tier only permits API calls against explicitly mapped ad accounts."
+      },
+      {
+        "task": "Record and submit the demo video for Standard tier access",
+        "reason": "Standard tier requires a visual walkthrough of your working integration before approving external member access."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "claim": "LinkedIn OAuth 2.0 authorization and token endpoints are https://www.linkedin.com/oauth/v2/authorization and https://www.linkedin.com/oauth/v2/accessToken.",
+      "tag": "tested",
+      "source_url": "https://www.linkedin.com/oauth/.well-known/openid-configuration",
+      "source_note": "OpenID configuration returns authorization_endpoint and token_endpoint on linkedin.com.",
+      "test_id": "T1",
+      "retrieved_at": "2026-11-01T18:31:35.000Z"
+    },
+    {
+      "id": "E2",
+      "claim": "LinkedIn 3-legged OAuth requires absolute HTTPS redirect URLs with no query parameters or fragment identifiers.",
+      "tag": "official",
+      "source_url": "https://learn.microsoft.com/en-us/linkedin/shared/authentication/authorization-code-flow",
+      "source_note": "LinkedIn 3-Legged OAuth Flow documentation specifies redirect URLs must be absolute HTTPS, ignore query params, and forbid hash fragments.",
+      "test_id": null,
+      "retrieved_at": "2026-11-01T18:31:30.000Z"
+    },
+    {
+      "id": "E3",
+      "claim": "Ad Accounts and Company Pages are managed entities with specific administrative roles, and Ad Account users can be queried and managed via the API.",
+      "tag": "official",
+      "source_url": "https://learn.microsoft.com/en-us/linkedin/marketing/getting-started?view=li-lms-2026-10",
+      "source_note": "Documentation outlines Company Page and Ad Account concepts, roles like ACCOUNT_BILLING_ADMIN, and Campaign Manager usage.",
+      "test_id": null,
+      "retrieved_at": "2026-11-01T18:31:25.000Z"
+    },
+    {
+      "id": "E4",
+      "claim": "Getting started with the Advertising API requires creating an app linked to a Company Page, mapping 9-digit Ad Account IDs in Development tier, and submitting a video demo to upgrade to Standard tier.",
+      "tag": "official",
+      "source_url": "https://learn.microsoft.com/en-us/linkedin/marketing/quick-start?view=li-lms-2026-10",
+      "source_note": "Quick start docs state developers apply under Products tab, map ad account IDs in Development tier, and submit a tier upgrade request with a video demonstrating campaign creation/editing/optimization.",
+      "test_id": null,
+      "retrieved_at": "2026-11-01T18:31:28.000Z"
+    },
+    {
+      "id": "E5",
+      "claim": "The Advertising API product grants permissions including r_ads, rw_ads, r_ads_reporting, r_organization_admin, and rw_organization_admin.",
+      "tag": "official",
+      "source_url": "https://learn.microsoft.com/en-us/linkedin/marketing/increasing-access?view=li-lms-2026-10",
+      "source_note": "Increasing Access guide lists all granted OAuth permissions for Advertising API and details General Availability vs restricted programs.",
+      "test_id": null,
+      "retrieved_at": "2026-11-01T18:31:32.000Z"
+    },
+    {
+      "id": "E6",
+      "claim": "Reporting API requires r_ads to read ad accounts and r_ads_reporting to retrieve campaign analytics.",
+      "tag": "official",
+      "source_url": "https://learn.microsoft.com/en-us/linkedin/marketing/integrations/ads-reporting/getting-started?view=li-lms-2026-10",
+      "source_note": "Reporting documentation details required scopes r_ads and r_ads_reporting.",
+      "test_id": null,
+      "retrieved_at": "2026-11-01T18:31:27.000Z"
+    },
+    {
+      "id": "E7",
+      "claim": "LinkedIn authorization endpoint rejects invalid client IDs with an explicit error message.",
+      "tag": "tested",
+      "source_url": "https://www.linkedin.com/oauth/v2/authorization",
+      "source_note": "Probed authorize endpoint with fake_client_12345; responded with status 200 and text 'The passed in client_id is invalid \"fake_client_12345\"'.",
+      "test_id": "T2",
+      "retrieved_at": "2026-11-01T18:31:23.000Z"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Probe LinkedIn OpenID configuration discovery document",
+      "method": "oauth_discovery_document",
+      "request": "GET https://www.linkedin.com/oauth/.well-known/openid-configuration",
+      "result": "confirmed_docs",
+      "observed": "Status 200, returned JSON discovery with issuer, authorization_endpoint (https://www.linkedin.com/oauth/v2/authorization), and token_endpoint (https://www.linkedin.com/oauth/v2/accessToken)."
+    },
+    {
+      "id": "T2",
+      "description": "Probe LinkedIn OAuth authorization endpoint with fake client ID",
+      "method": "authorize_endpoint_dummy_client",
+      "request": "GET https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=fake_client_12345&redirect_uri=https%3A%2F%2Fexample.com%2Fcallback&scope=r_ads",
+      "result": "confirmed_docs",
+      "observed": "Status 200, HTML returned error banner: 'The passed in client_id is invalid \"fake_client_12345\"'."
+    },
+    {
+      "id": "T3",
+      "description": "Check LinkedIn Marketing API Overview documentation",
+      "method": "docs_page_reachable",
+      "request": "GET https://learn.microsoft.com/en-us/linkedin/marketing/overview?view=li-lms-2026-10",
+      "result": "confirmed_docs",
+      "observed": "Status 200, official documentation for LinkedIn Marketing Developer Platform products and versioning."
+    },
+    {
+      "id": "T4",
+      "description": "Check LinkedIn Marketing API Quick Start guide",
+      "method": "docs_page_reachable",
+      "request": "GET https://learn.microsoft.com/en-us/linkedin/marketing/quick-start?view=li-lms-2026-10",
+      "result": "confirmed_docs",
+      "observed": "Status 200, details two-tier system (Development tier self-serve with Ad Account ID mapping; Standard tier upgrade requiring demo video)."
+    },
+    {
+      "id": "T5",
+      "description": "Probe LinkedIn Developer Portal app creation URL without authentication",
+      "method": "registration_page_reachable_without_login",
+      "request": "GET https://www.linkedin.com/developers/apps/new",
+      "result": "not_possible_without_login",
+      "observed": "Requires authentication with a personal LinkedIn account."
+    }
+  ],
+  "unknowns": [
+    {
+      "question": "What is the exact review turnaround time for upgrading from Development tier to Standard tier?",
+      "why_unknown": "LinkedIn does not publish an official Service Level Agreement (SLA) or estimated review duration for Standard tier video reviews.",
+      "how_to_resolve": "Submit the tier upgrade request in the Developer Portal and monitor application status or submit a support ticket at https://www.linkedin.com/help/lms if unreviewed after 10-14 business days."
+    }
+  ]
+}

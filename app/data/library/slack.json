@@ -1,0 +1,276 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "app": {
+    "name": "Slack",
+    "website": "https://slack.com",
+    "developer_docs_url": "https://api.slack.com/apps",
+    "generated_at": "2026-11-01T18:24:35.026Z",
+    "oauth_supported": "yes"
+  },
+  "summary": {
+    "headline": "Create a Slack app via the developer portal, configure OAuth redirect URLs, and request scopes to enable user installation.",
+    "type": "self_serve",
+    "difficulty": "moderate",
+    "type_note": "Test mode is self-serve; production public distribution may need review",
+    "difficulty_factors": [
+      {
+        "factor": "registration",
+        "score": 1,
+        "reason": "Requires logging into a Slack account to access the app management portal.",
+        "evidence_ids": [
+          "E2"
+        ]
+      },
+      {
+        "factor": "review",
+        "score": 1,
+        "reason": "Distributing publicly or requesting sensitive scopes may require Slack app directory review, but internal/workspace apps are self-serve.",
+        "evidence_ids": [
+          "E2"
+        ]
+      },
+      {
+        "factor": "wait_time",
+        "score": 1,
+        "reason": "No official review wait time published for general apps; workspace distribution is instant.",
+        "evidence_ids": [
+          "E2"
+        ]
+      },
+      {
+        "factor": "cost_or_access",
+        "score": 0,
+        "reason": "Creating a Slack app and testing OAuth does not require a paid plan.",
+        "evidence_ids": [
+          "E2"
+        ]
+      },
+      {
+        "factor": "human_dependency",
+        "score": 1,
+        "reason": "Requires human login to the Slack developer dashboard.",
+        "evidence_ids": [
+          "E2"
+        ]
+      }
+    ],
+    "setup_effort": {
+      "estimate": "30-45 minutes",
+      "basis": "community"
+    },
+    "approval_wait": {
+      "label": "Instant for workspace installation; variable if submitting to App Directory",
+      "min_days": null,
+      "max_days": null,
+      "basis": "official",
+      "evidence_ids": [
+        "E2"
+      ]
+    },
+    "can_start_today": {
+      "answer": "partly",
+      "reason": "You can view documentation and the app creation portal immediately, but logging in and creating credentials requires a human user account."
+    },
+    "confidence": {
+      "level": "high",
+      "reason": "Verified official endpoints and developer portal existence via public probes."
+    }
+  },
+  "blockers": [
+    {
+      "title": "Login Required for App Creation",
+      "severity": "blocking",
+      "detail": "Creating and managing Slack apps requires authenticating with a Slack user account.",
+      "workaround": "Log in manually to the Slack API dashboard.",
+      "evidence_ids": [
+        "E2"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "stage": "setup",
+      "title": "Create a Slack App",
+      "action": "Go to the Slack API apps page, sign in, and click 'Create New App'.",
+      "url": "https://api.slack.com/apps",
+      "fields": [
+        {
+          "name": "App Name",
+          "guidance": "Enter your AI agent's name"
+        },
+        {
+          "name": "Development Slack Workspace",
+          "guidance": "Select your workspace for testing"
+        }
+      ],
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires authentication with a Slack account.",
+      "evidence_ids": [
+        "E2"
+      ]
+    },
+    {
+      "order": 2,
+      "stage": "setup",
+      "title": "Configure OAuth Redirect URLs",
+      "action": "Navigate to 'OAuth & Permissions' in your app settings and add your redirect URL.",
+      "url": "https://api.slack.com/apps",
+      "fields": [
+        {
+          "name": "Redirect URLs",
+          "guidance": "Enter https://your-app.com/auth/callback"
+        }
+      ],
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires dashboard access.",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "order": 3,
+      "stage": "setup",
+      "title": "Add Scopes",
+      "action": "Under 'OAuth & Permissions', add the required Bot or User token scopes for your agent.",
+      "url": "https://api.slack.com/apps",
+      "fields": [
+        {
+          "name": "Scopes",
+          "guidance": "e.g., channels:read, chat:write"
+        }
+      ],
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires dashboard access.",
+      "evidence_ids": [
+        "E1"
+      ]
+    }
+  ],
+  "scopes": [
+    {
+      "scope": "channels:read",
+      "purpose": "View basic information about public channels in a workspace",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": true,
+      "evidence_ids": [
+        "E3"
+      ]
+    },
+    {
+      "scope": "chat:write",
+      "purpose": "Send messages on behalf of the app",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": true,
+      "evidence_ids": [
+        "E1"
+      ]
+    }
+  ],
+  "if_stuck": {
+    "common_rejection_reasons": [
+      {
+        "reason": "Invalid redirect URI mismatch during OAuth handshake",
+        "fix": "Ensure the redirect URL configured in the Slack app dashboard matches the exact callback URL sent by your application.",
+        "evidence_ids": [
+          "E1"
+        ]
+      }
+    ],
+    "contacts": [
+      {
+        "label": "Slack API Support",
+        "url": "https://api.slack.com/support"
+      }
+    ],
+    "message_template": {
+      "subject": "OAuth Integration Assistance for {{app_name}}",
+      "body": "Hello Slack Support,\n\nWe are integrating our AI agent {{app_name}} with Slack via OAuth and need assistance with {{topic}}.\n\nThank you,\n{{developer_name}}"
+    }
+  },
+  "agent_vs_you": {
+    "agent_did": [
+      "Probed Slack authentication docs and app dashboard endpoints to verify accessibility."
+    ],
+    "agent_can_do_next": [
+      "Draft configuration documentation or environment variable templates for Slack client credentials."
+    ],
+    "you_must": [
+      {
+        "task": "Log into the Slack API portal and create the app",
+        "reason": "Requires human authentication and account access."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "claim": "Slack OAuth v2 installation documentation describes setting up redirect URLs and scopes.",
+      "tag": "official",
+      "source_url": "https://docs.slack.dev/authentication/installing-with-oauth",
+      "source_note": "Official Slack docs outline OAuth installation flow.",
+      "retrieved_at": "2026-11-01T18:24:35.026Z"
+    },
+    {
+      "id": "E2",
+      "claim": "Slack app creation requires signing in to a user account at api.slack.com/apps.",
+      "tag": "official",
+      "source_url": "https://api.slack.com/apps",
+      "source_note": "Response indicates user must sign in to create applications.",
+      "retrieved_at": "2026-11-01T18:24:35.026Z"
+    },
+    {
+      "id": "E3",
+      "claim": "Authorize endpoint accepts client_id and scope parameters.",
+      "tag": "tested",
+      "source_url": "https://slack.com/oauth/v2/authorize?client_id=fake_client_id_123&scope=channels:read",
+      "source_note": "Probe returned 200 OK.",
+      "test_id": "T4",
+      "retrieved_at": "2026-11-01T18:24:35.026Z"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Check Slack OAuth v2 docs URL",
+      "method": "docs_page_reachable",
+      "request": "GET https://api.slack.com/authentication/oauth-v2",
+      "result": "confirmed_docs",
+      "observed": "Redirected to docs.slack.dev/authentication/installing-with-oauth (302)"
+    },
+    {
+      "id": "T2",
+      "description": "Check Slack apps dashboard page",
+      "method": "registration_page_reachable_without_login",
+      "request": "GET https://api.slack.com/apps",
+      "result": "not_possible_without_login",
+      "observed": "200 OK with notice that login is required to create apps"
+    },
+    {
+      "id": "T3",
+      "description": "Check legacy oauth docs",
+      "method": "docs_page_reachable",
+      "request": "GET https://api.slack.com/legacy/oauth",
+      "result": "confirmed_docs",
+      "observed": "Redirected to docs.slack.dev/legacy/legacy-authentication/ (302)"
+    },
+    {
+      "id": "T4",
+      "description": "Probe authorize endpoint with dummy client ID",
+      "method": "authorize_endpoint_dummy_client",
+      "request": "GET https://slack.com/oauth/v2/authorize?client_id=fake_client_id_123&scope=channels:read",
+      "result": "confirmed_docs",
+      "observed": "200 OK response from Slack authorize page"
+    }
+  ],
+  "unknowns": [
+    {
+      "question": "What is the exact review duration if submitting to the Slack App Directory publicly?",
+      "why_unknown": "No fixed timeline is publicly guaranteed by Slack for directory reviews.",
+      "how_to_resolve": "Submit an app for review through the Slack app management dashboard and monitor response times."
+    }
+  ]
+}

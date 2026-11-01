@@ -1,0 +1,236 @@
+{
+  "app": {
+    "name": "GitHub",
+    "website": "https://github.com",
+    "developer_docs_url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+    "generated_at": "2026-11-01T18:17:17.509Z",
+    "oauth_supported": "yes"
+  },
+  "summary": {
+    "headline": "Developers can instantly self-serve register a GitHub OAuth App through their account settings without any mandatory review gating.",
+    "type": "self_serve",
+    "type_note": "OAuth App registration is completely self-serve via developer settings, with no verification or review process required for basic functionality.",
+    "difficulty": "easy",
+    "difficulty_factors": [
+      {
+        "factor": "registration",
+        "score": 0,
+        "reason": "Direct self-service form in user/organization developer settings.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      {
+        "factor": "review",
+        "score": 0,
+        "reason": "No review process or approval gate required to use OAuth apps.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      {
+        "factor": "wait_time",
+        "score": 0,
+        "reason": "Instant availability upon form submission.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      {
+        "factor": "cost_or_access",
+        "score": 0,
+        "reason": "Free to create and register up to 100 OAuth apps under a personal or organization account.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      {
+        "factor": "human_dependency",
+        "score": 1,
+        "reason": "Requires human login to GitHub to create the app and obtain client credentials.",
+        "evidence_ids": [
+          "E1"
+        ]
+      }
+    ],
+    "setup_effort": {
+      "estimate": "10-15 minutes",
+      "basis": "official"
+    },
+    "approval_wait": {
+      "label": "None",
+      "min_days": 0,
+      "max_days": 0,
+      "basis": "official",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    "can_start_today": {
+      "answer": "yes",
+      "reason": "Registration is fully self-service and available immediately upon logging into GitHub."
+    },
+    "confidence": {
+      "level": "high",
+      "reason": "Verified via official GitHub Developer documentation and public probes."
+    }
+  },
+  "blockers": [],
+  "steps": [
+    {
+      "order": 1,
+      "stage": "setup",
+      "title": "Navigate to Developer Settings",
+      "action": "Log in to GitHub, click your profile picture in the upper-right corner, select Settings, click Developer settings in the left sidebar, and then click OAuth apps.",
+      "url": "https://github.com/settings/developers",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires authentication into a personal GitHub account.",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "order": 2,
+      "stage": "setup",
+      "title": "Register New OAuth App",
+      "action": "Click 'New OAuth App' (or 'Register a new application') and fill in your application details.",
+      "url": "https://github.com/settings/applications/new",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires interactive form submission and authenticated session.",
+      "fields": [
+        {
+          "name": "Application name",
+          "guidance": "Enter your AI agent's public name (e.g., {{app_name}})."
+        },
+        {
+          "name": "Homepage URL",
+          "guidance": "Enter the full URL to your application's homepage (e.g., {{homepage_url}})."
+        },
+        {
+          "name": "Authorization callback URL",
+          "guidance": "Enter your OAuth redirect URI (e.g., {{redirect_uri}})."
+        }
+      ],
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "order": 3,
+      "stage": "setup",
+      "title": "Retrieve Credentials",
+      "action": "Copy the generated Client ID and generate a new Client Secret, then store them securely in your app environment.",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Secrets are displayed once and require authenticated access to view.",
+      "evidence_ids": [
+        "E1"
+      ]
+    }
+  ],
+  "scopes": [
+    {
+      "scope": "repo",
+      "purpose": "Provides full control of private and public repositories, including reading and writing code, commit status, issues, and pull requests.",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": true,
+      "evidence_ids": [
+        "E2"
+      ]
+    },
+    {
+      "scope": "user",
+      "purpose": "Reads and writes all user profile data including private profile info.",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": true,
+      "evidence_ids": [
+        "E2"
+      ]
+    }
+  ],
+  "if_stuck": {
+    "common_rejection_reasons": [],
+    "contacts": [
+      {
+        "label": "GitHub Support",
+        "url": "https://support.github.com"
+      },
+      {
+        "label": "GitHub Developer Community",
+        "url": "https://github.community"
+      }
+    ],
+    "message_template": {
+      "subject": "Help with GitHub OAuth App integration for {{app_name}}",
+      "body": "Hello GitHub Support,\n\nWe are setting up an OAuth App for our integration {{app_name}} at {{homepage_url}} and encountered an issue with authorization/callback handling.\n\nCould you please provide guidance on resolving this?\n\nThank you,\n{{developer_name}}"
+    }
+  },
+  "agent_vs_you": {
+    "agent_did": [
+      "Probed official GitHub OAuth creation documentation and confirmed registration steps.",
+      "Probed OAuth scopes documentation.",
+      "Probed authorize endpoint redirect behavior."
+    ],
+    "agent_can_do_next": [
+      "Draft environment variable templates for CLIENT_ID and CLIENT_SECRET.",
+      "Implement the OAuth authorization code exchange flow in your codebase."
+    ],
+    "you_must": [
+      {
+        "task": "Log into GitHub and create the OAuth App via Developer Settings",
+        "reason": "Requires human authentication and account ownership."
+      },
+      {
+        "task": "Securely save Client ID and Client Secret",
+        "reason": "Credentials must be kept confidential and cannot be retrieved by automated agents."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "claim": "You can create and register an OAuth app under your personal account or organization via Settings > Developer settings > OAuth apps > New OAuth App.",
+      "tag": "official",
+      "source_url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+      "source_note": "Official instructions for creating an OAuth app on GitHub.",
+      "retrieved_at": "2026-11-01T18:17:17.509Z"
+    },
+    {
+      "id": "E2",
+      "claim": "GitHub OAuth apps use explicit scopes such as repo and user to define requested access permissions.",
+      "tag": "official",
+      "source_url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+      "source_note": "Official documentation detailing available OAuth scopes.",
+      "retrieved_at": "2026-11-01T18:17:17.509Z"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Probe GitHub OAuth creation docs page",
+      "method": "docs_page_reachable",
+      "request": "GET https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
+      "result": "confirmed_docs",
+      "observed": "Status 200 with complete documentation text."
+    },
+    {
+      "id": "T2",
+      "description": "Probe GitHub authorize endpoint with dummy client ID",
+      "method": "authorize_endpoint_dummy_client",
+      "request": "GET https://github.com/login/oauth/authorize?client_id=fake_client_id",
+      "result": "confirmed_docs",
+      "observed": "Status 302 redirecting to login page."
+    },
+    {
+      "id": "T3",
+      "description": "Probe GitHub OAuth scopes docs page",
+      "method": "docs_page_reachable",
+      "request": "GET https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
+      "result": "confirmed_docs",
+      "observed": "Status 200 with scopes list."
+    }
+  ],
+  "unknowns": []
+}

@@ -1,0 +1,221 @@
+{
+  "app": {
+    "name": "Workday",
+    "website": "https://www.workday.com",
+    "developer_docs_url": "https://developer.workday.com/",
+    "generated_at": "2026-11-01T18:46:16.088Z",
+    "oauth_supported": "yes"
+  },
+  "summary": {
+    "headline": "Workday requires building integration apps via the Developer Console and App Hub, using tenant-bound OAuth authentication rather than public self-serve app registration.",
+    "type": "tenant_bound",
+    "type_note": "Workday integrations and OAuth setups are bound to specific Workday tenants, implementation environments, and company administration rather than a public developer app store.",
+    "difficulty": "gated",
+    "difficulty_factors": [
+      {
+        "factor": "registration",
+        "score": 2,
+        "reason": "Requires a Workday Developer account and access to the Developer Console and App Hub.",
+        "evidence_ids": [
+          "E2",
+          "E3"
+        ]
+      },
+      {
+        "factor": "review",
+        "score": 2,
+        "reason": "Apps must be promoted through Implementation, Sandbox, and Production release cycles managed by company administrators.",
+        "evidence_ids": [
+          "E3"
+        ]
+      },
+      {
+        "factor": "wait_time",
+        "score": 2,
+        "reason": "No published timeline; depends on organizational tenant provisioning and review.",
+        "evidence_ids": [
+          "E3"
+        ]
+      },
+      {
+        "factor": "cost_or_access",
+        "score": 2,
+        "reason": "Requires access to Workday tenants (Implementation, Sandbox, Production) via enterprise partnership or customer relationship.",
+        "evidence_ids": [
+          "E3"
+        ]
+      },
+      {
+        "factor": "human_dependency",
+        "score": 2,
+        "reason": "Production deployment requires tenant administrators to install and configure the app.",
+        "evidence_ids": [
+          "E3"
+        ]
+      }
+    ],
+    "setup_effort": {
+      "estimate": "Multiple days of enterprise integration setup",
+      "basis": "official",
+      "evidence_ids": [
+        "E3"
+      ]
+    },
+    "approval_wait": {
+      "label": "Unknown",
+      "min_days": null,
+      "max_days": null,
+      "basis": "unknown",
+      "evidence_ids": []
+    },
+    "can_start_today": {
+      "answer": "partly",
+      "reason": "You can access public developer documentation and llms.txt today, but creating apps requires a Workday developer account and tenant access."
+    },
+    "confidence": {
+      "level": "high",
+      "reason": "Official developer site structure and integration app lifecycle documentation were directly probed and verified."
+    }
+  },
+  "blockers": [
+    {
+      "title": "Tenant and Enterprise Bound Access",
+      "severity": "blocking",
+      "detail": "Workday does not use generic consumer OAuth app registration; apps are built and promoted across specific Workday tenant environments (Implementation, Sandbox, Production).",
+      "workaround": "Obtain access through a Workday customer or partner developer program.",
+      "evidence_ids": [
+        "E3"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "stage": "setup",
+      "title": "Create a Workday Developer Account",
+      "action": "Sign up for a Workday developer account to access the Developer Console and App Hub.",
+      "url": "https://developer.workday.com/",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires creating an authenticated developer account on Workday's gated platform.",
+      "evidence_ids": [
+        "E2"
+      ]
+    },
+    {
+      "order": 2,
+      "stage": "setup",
+      "title": "Build Integration App",
+      "action": "Use Workday Orchestrate for Integrations and the App Hub to create your integration app and save your code.",
+      "url": "https://developer.workday.com/",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires developer console access and proprietary low-code orchestration builder tools.",
+      "evidence_ids": [
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "order": 3,
+      "stage": "testing",
+      "title": "Promote and Test in Implementation / Sandbox",
+      "action": "Promote your app from Implementation Release to Sandbox Release to test your integrations against preview tenants.",
+      "url": "https://developer.workday.com/",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires access to provisioned Workday Sandbox and Implementation tenants.",
+      "evidence_ids": [
+        "E3"
+      ]
+    },
+    {
+      "order": 4,
+      "stage": "review_submission",
+      "title": "Release to Production",
+      "action": "Promote your app to Production Release so your Company Administrator can install and configure it on Production tenants.",
+      "url": "https://developer.workday.com/",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires company administrator permissions and production tenant access.",
+      "evidence_ids": [
+        "E3"
+      ]
+    }
+  ],
+  "scopes": [],
+  "if_stuck": {
+    "common_rejection_reasons": [],
+    "contacts": [
+      {
+        "label": "Workday Developer Forum",
+        "url": "https://forum.developer.workday.com/"
+      }
+    ],
+    "message_template": {
+      "subject": "Inquiry regarding Workday Integration App Deployment and OAuth Setup",
+      "body": "Hello Workday Support,\n\nWe are developing an integration app on the Workday Developer Platform and need guidance on finalizing our tenant authentication and production promotion.\n\nThank you,\n{{developer_name}}"
+    }
+  },
+  "agent_vs_you": {
+    "agent_did": [
+      "Probed developer.workday.com and retrieved llms.txt index",
+      "Verified official developer documentation structure and integration app lifecycle guidelines"
+    ],
+    "agent_can_do_next": [],
+    "you_must": [
+      {
+        "task": "Log into the Workday Developer Console",
+        "reason": "Console access and app building require authenticated developer credentials."
+      },
+      {
+        "task": "Provision Workday tenant environments",
+        "reason": "Testing and deploying integration apps require access to Implementation and Sandbox tenants."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "claim": "Workday developer site provides an llms.txt index pointing to markdown documentation and states console tools require an account.",
+      "tag": "tested",
+      "source_url": "https://developer.workday.com/llms.txt",
+      "source_note": "llms.txt outlines public documentation availability and requires a developer account for console/app builder tools.",
+      "test_id": "T1",
+      "retrieved_at": "2026-11-01T18:46:16.088Z"
+    },
+    {
+      "id": "E2",
+      "claim": "Getting Started with Integration Apps details building secure integrations using Workday Orchestrate for Integrations.",
+      "tag": "official",
+      "source_url": "https://developer.workday.com/doc/GUID-1293c9bb-ea02-48cd-a523-254b5060b3a6-enHYPHENus.md",
+      "source_note": "Describes building integration apps and configuring Integration System Users (ISUs).",
+      "retrieved_at": "2026-11-01T18:46:16.088Z"
+    },
+    {
+      "id": "E3",
+      "claim": "Integration App Lifecycle documentation explains promotion levels: Implementation Release, Sandbox Release, and Production Release.",
+      "tag": "official",
+      "source_url": "https://developer.workday.com/doc/GUID-ff44b82e-ff86-46d5-aeab-7a694bd8a974.md",
+      "source_note": "Details promoting apps through promotion levels to run on corresponding tenant environments.",
+      "retrieved_at": "2026-11-01T18:46:16.088Z"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Fetch llms.txt from developer.workday.com",
+      "method": "docs_page_reachable",
+      "request": "GET https://developer.workday.com/llms.txt",
+      "result": "confirmed_docs",
+      "observed": "200 OK with Markdown index of developer documentation"
+    }
+  ],
+  "unknowns": [
+    {
+      "question": "What are the exact OAuth scope names and parameters required for external API calls?",
+      "why_unknown": "Detailed API reference pages require specific docId fetching or authenticated developer console access.",
+      "how_to_resolve": "Log into the Workday Developer Console and review API reference documentation."
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "app": {
+    "name": "Shopify",
+    "website": "https://shopify.com",
+    "developer_docs_url": "https://shopify.dev/docs/apps",
+    "generated_at": "2026-11-01T18:27:36.266Z",
+    "oauth_supported": "yes"
+  },
+  "summary": {
+    "headline": "Shopify uses an app-based model where developers register apps via the Partner Dashboard and authenticate using OAuth 2.0.",
+    "type": "self_serve",
+    "difficulty": "moderate",
+    "difficulty_factors": [
+      {
+        "factor": "registration",
+        "score": 1,
+        "reason": "Requires a Shopify Partner account to register apps in the Dev Dashboard.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      {
+        "factor": "review",
+        "score": 1,
+        "reason": "Apps for private use don't need review; public apps in the Shopify App Store must undergo a formal review process.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      {
+        "factor": "wait_time",
+        "score": 1,
+        "reason": "Review times for public apps vary and are not strictly published.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      {
+        "factor": "cost_or_access",
+        "score": 0,
+        "reason": "Developer accounts and access to Shopify APIs are free, with revenue sharing models for published apps.",
+        "evidence_ids": [
+          "E1"
+        ]
+      },
+      {
+        "factor": "human_dependency",
+        "score": 1,
+        "reason": "Requires manual setup of a Partner account and creation of development stores.",
+        "evidence_ids": [
+          "E1"
+        ]
+      }
+    ],
+    "setup_effort": {
+      "estimate": "60-120 minutes for setup and initial auth flow implementation.",
+      "basis": "official",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    "approval_wait": {
+      "label": "None for private apps; variable for App Store",
+      "basis": "official",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    "can_start_today": {
+      "answer": "yes",
+      "reason": "You can sign up for a Shopify Partner account and create an app in the Dev Dashboard immediately."
+    },
+    "confidence": {
+      "level": "high",
+      "reason": "Shopify official developer documentation is clear and accessible."
+    }
+  },
+  "blockers": [
+    {
+      "title": "Shopify Partner Account Required",
+      "severity": "blocking",
+      "detail": "All app development requires a registered Shopify Partner account.",
+      "evidence_ids": [
+        "E1"
+      ]
+    }
+  ],
+  "steps": [
+    {
+      "order": 1,
+      "stage": "setup",
+      "title": "Create a Shopify Partner Account",
+      "action": "Sign up for a free Shopify Partner account to access the Dev Dashboard.",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires signing up for a business-related account and accepting terms.",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "order": 2,
+      "stage": "setup",
+      "title": "Register App in Dev Dashboard",
+      "action": "Navigate to the Partner Dashboard, create a new app, and configure your redirect URI.",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires access to the authenticated Partner Dashboard.",
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "order": 3,
+      "stage": "testing",
+      "title": "Implement OAuth Flow",
+      "action": "Use the Shopify CLI or your preferred stack to implement OAuth 2.0 based on the official documentation.",
+      "url": "https://shopify.dev/docs/apps/build/authentication-authorization/authenticate-standalone-apps",
+      "owner": "you",
+      "agent_status": "human_only",
+      "why_human_only": "Requires writing custom code for the integration.",
+      "evidence_ids": [
+        "E1"
+      ]
+    }
+  ],
+  "scopes": [
+    {
+      "scope": "read_products",
+      "purpose": "Read product data from the shop",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": true,
+      "evidence_ids": [
+        "E1"
+      ]
+    },
+    {
+      "scope": "write_orders",
+      "purpose": "Modify order data",
+      "triggers_extra_review": "no",
+      "recommended_for_common_use": false,
+      "evidence_ids": [
+        "E1"
+      ]
+    }
+  ],
+  "if_stuck": {
+    "common_rejection_reasons": [
+      {
+        "reason": "App UI not embedded correctly in Shopify Admin",
+        "fix": "Ensure you are using the latest Shopify App Bridge libraries.",
+        "evidence_ids": [
+          "E1"
+        ]
+      }
+    ],
+    "contacts": [
+      {
+        "label": "Shopify Community Forums",
+        "url": "https://community.shopify.com/c/shopify-apis-and-sdks/bd-p/shopify-apis-and-sdks"
+      }
+    ],
+    "message_template": {
+      "subject": "Help integrating {{App_Name}} with Shopify",
+      "body": "Hi, I am developing an integration for {{App_Name}} and have encountered an issue with {{Specific_Issue}}. I am following the official Shopify OAuth documentation. Could you please provide guidance on the correct implementation for this use case?"
+    }
+  },
+  "agent_vs_you": {
+    "agent_did": [
+      "Verified Shopify developer documentation exists and is accessible.",
+      "Confirmed Shopify uses OAuth 2.0 for app authentication."
+    ],
+    "agent_can_do_next": [
+      "Draft boilerplate code for your OAuth implementation once you have your client credentials."
+    ],
+    "you_must": [
+      {
+        "task": "Create a Partner account and App entry.",
+        "reason": "Only authorized users can access the dashboard to generate client IDs and secrets."
+      }
+    ]
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "claim": "Shopify requires Partner accounts to register apps, uses OAuth 2.0, and has specific paths for public and private apps.",
+      "tag": "official",
+      "source_url": "https://shopify.dev/docs/apps",
+      "source_note": "Official portal for Shopify app development, scaffolding, and authentication.",
+      "retrieved_at": "2026-11-01T18:35:00Z"
+    }
+  ],
+  "tests": [
+    {
+      "id": "T1",
+      "description": "Confirm official developer documentation is accessible.",
+      "method": "docs_page_reachable",
+      "request": "https://shopify.dev/docs/apps",
+      "result": "confirmed_docs",
+      "observed": "Status 200, returned scaffold instructions and links."
+    }
+  ],
+  "unknowns": []
+}
