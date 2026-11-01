@@ -4,41 +4,46 @@
     "website": "https://shopify.com",
     "developer_docs_url": "https://shopify.dev/docs/apps",
     "generated_at": "2026-11-01T18:27:36.266Z",
-    "oauth_supported": "yes"
+    "oauth_supported": "yes",
+    "reviewed_at": "2026-11-02",
+    "review_note": "Checked against provider sources on 2 November 2026; corrections are listed in VERIFICATION.md."
   },
   "summary": {
-    "headline": "Shopify uses an app-based model where developers register apps via the Partner Dashboard and authenticate using OAuth 2.0.",
-    "type": "self_serve",
+    "headline": "You can create a Shopify app for your own store right away, but distributing to other merchants needs a Partner account and review, and order and customer data need separate approvals.",
+    "type": "review_gated",
     "difficulty": "moderate",
     "difficulty_factors": [
       {
         "factor": "registration",
         "score": 1,
-        "reason": "Requires a Shopify Partner account to register apps in the Dev Dashboard.",
+        "reason": "A Partner account is needed to distribute apps to other merchants; merchants can create custom apps for their own store.",
         "evidence_ids": [
-          "E1"
+          "E3",
+          "E4"
         ]
       },
       {
         "factor": "review",
-        "score": 1,
-        "reason": "Apps for private use don't need review; public apps in the Shopify App Store must undergo a formal review process.",
+        "score": 2,
+        "reason": "Access to all orders and to protected customer data must be requested and approved in the Partner Dashboard, and App Store listing has its own review.",
         "evidence_ids": [
-          "E1"
+          "E2",
+          "E6"
         ]
       },
       {
         "factor": "wait_time",
         "score": 1,
-        "reason": "Review times for public apps vary and are not strictly published.",
+        "reason": "Scope approvals are reported at two to four weeks by a third party; no App Store review time was found.",
         "evidence_ids": [
-          "E1"
+          "E5",
+          "E6"
         ]
       },
       {
         "factor": "cost_or_access",
         "score": 0,
-        "reason": "Developer accounts and access to Shopify APIs are free, with revenue sharing models for published apps.",
+        "reason": "No registration fee was mentioned in the sources checked.",
         "evidence_ids": [
           "E1"
         ]
@@ -46,24 +51,27 @@
       {
         "factor": "human_dependency",
         "score": 1,
-        "reason": "Requires manual setup of a Partner account and creation of development stores.",
+        "reason": "You must set up a Partner account and a development store, and request approvals manually.",
         "evidence_ids": [
-          "E1"
+          "E4"
         ]
       }
     ],
     "setup_effort": {
-      "estimate": "60-120 minutes for setup and initial auth flow implementation.",
-      "basis": "official",
+      "estimate": "About 1-2 hours including a development store (estimate)",
+      "basis": "inferred",
       "evidence_ids": [
         "E1"
       ]
     },
     "approval_wait": {
-      "label": "None for private apps; variable for App Store",
-      "basis": "official",
+      "label": "None found for your own store; scope approvals reported at 2-4 weeks (third party); App Store review time not found",
+      "min_days": null,
+      "max_days": null,
+      "basis": "community",
       "evidence_ids": [
-        "E1"
+        "E5",
+        "E6"
       ]
     },
     "can_start_today": {
@@ -71,17 +79,40 @@
       "reason": "You can sign up for a Shopify Partner account and create an app in the Dev Dashboard immediately."
     },
     "confidence": {
-      "level": "high",
-      "reason": "Shopify official developer documentation is clear and accessible."
-    }
+      "level": "medium",
+      "reason": "Scope and data approvals come from Shopify's docs; Partner-account and timing details come partly from community and third-party sources, and no official App Store review time was found."
+    },
+    "type_note": "Custom apps for your own store are self-serve. Apps for other merchants need a Partner account and review, and some data scopes need approval in the Partner Dashboard."
   },
   "blockers": [
     {
-      "title": "Shopify Partner Account Required",
+      "title": "Protected customer data approval",
       "severity": "blocking",
-      "detail": "All app development requires a registered Shopify Partner account.",
+      "detail": "By default apps cannot access protected customer data. The API does not return it from non-development stores until the app is approved, and orders contain customer data.",
+      "workaround": "Request protected customer data access in the Partner Dashboard early, and develop against a development store meanwhile.",
       "evidence_ids": [
-        "E1"
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "title": "Only the last 60 days of orders by default",
+      "severity": "slows_you_down",
+      "detail": "To read older orders you must request the read_all_orders scope in the Partner Dashboard and wait for approval.",
+      "workaround": "Request access early. A third party reports two to four weeks.",
+      "evidence_ids": [
+        "E2",
+        "E5"
+      ]
+    },
+    {
+      "title": "Partner account needed to distribute to other merchants",
+      "severity": "slows_you_down",
+      "detail": "Custom apps for a single store can be created from a merchant account, but distributing to other merchants needs a Partner account. Merchant-created custom apps on Basic and Starter plans cannot access protected customer data.",
+      "workaround": "Create a free Partner account if you plan to serve more than one store.",
+      "evidence_ids": [
+        "E3",
+        "E4"
       ]
     }
   ],
@@ -90,12 +121,12 @@
       "order": 1,
       "stage": "setup",
       "title": "Create a Shopify Partner Account",
-      "action": "Sign up for a free Shopify Partner account to access the Dev Dashboard.",
+      "action": "Sign up for a Shopify Partner account (needed to distribute to other merchants) to access the Dev Dashboard.",
       "owner": "you",
       "agent_status": "human_only",
       "why_human_only": "Requires signing up for a business-related account and accepting terms.",
       "evidence_ids": [
-        "E1"
+        "E4"
       ]
     },
     {
@@ -107,7 +138,7 @@
       "agent_status": "human_only",
       "why_human_only": "Requires access to the authenticated Partner Dashboard.",
       "evidence_ids": [
-        "E1"
+        "E4"
       ]
     },
     {
@@ -122,13 +153,24 @@
       "evidence_ids": [
         "E1"
       ]
+    },
+    {
+      "order": 4,
+      "stage": "review_submission",
+      "title": "Request approvals for sensitive data",
+      "action": "In the Partner Dashboard open your app, then API access. Request read_all_orders and protected customer data access if your agent needs them, describing your use case.",
+      "owner": "you",
+      "agent_status": "agent_can_draft",
+      "evidence_ids": [
+        "E2"
+      ]
     }
   ],
   "scopes": [
     {
       "scope": "read_products",
       "purpose": "Read product data from the shop",
-      "triggers_extra_review": "no",
+      "triggers_extra_review": "unknown",
       "recommended_for_common_use": true,
       "evidence_ids": [
         "E1"
@@ -136,21 +178,39 @@
     },
     {
       "scope": "write_orders",
-      "purpose": "Modify order data",
-      "triggers_extra_review": "no",
+      "purpose": "Modify order data. Orders contain customer data, so reading it also needs protected customer data approval.",
+      "triggers_extra_review": "yes",
       "recommended_for_common_use": false,
       "evidence_ids": [
-        "E1"
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "scope": "read_all_orders",
+      "purpose": "Read all orders instead of only the last 60 days. Must be requested in the Partner Dashboard.",
+      "triggers_extra_review": "yes",
+      "recommended_for_common_use": false,
+      "evidence_ids": [
+        "E2"
       ]
     }
   ],
   "if_stuck": {
     "common_rejection_reasons": [
       {
-        "reason": "App UI not embedded correctly in Shopify Admin",
-        "fix": "Ensure you are using the latest Shopify App Bridge libraries.",
+        "reason": "API returns an error saying the topic or object contains protected customer data",
+        "fix": "Complete Shopify's protected customer data requirements and request access in the Partner Dashboard.",
         "evidence_ids": [
-          "E1"
+          "E2",
+          "E3"
+        ]
+      },
+      {
+        "reason": "Only recent orders are returned",
+        "fix": "Request the read_all_orders scope in the Partner Dashboard.",
+        "evidence_ids": [
+          "E2"
         ]
       }
     ],
@@ -158,6 +218,10 @@
       {
         "label": "Shopify Community Forums",
         "url": "https://community.shopify.com/c/shopify-apis-and-sdks/bd-p/shopify-apis-and-sdks"
+      },
+      {
+        "label": "Shopify developer community",
+        "url": "https://community.shopify.dev"
       }
     ],
     "message_template": {
@@ -167,8 +231,7 @@
   },
   "agent_vs_you": {
     "agent_did": [
-      "Verified Shopify developer documentation exists and is accessible.",
-      "Confirmed Shopify uses OAuth 2.0 for app authentication."
+      "Confirmed that Shopify's developer documentation page loads."
     ],
     "agent_can_do_next": [
       "Draft boilerplate code for your OAuth implementation once you have your client credentials."
@@ -183,11 +246,52 @@
   "evidence": [
     {
       "id": "E1",
-      "claim": "Shopify requires Partner accounts to register apps, uses OAuth 2.0, and has specific paths for public and private apps.",
+      "claim": "Shopify's developer docs describe building apps; the documentation landing page loaded.",
       "tag": "official",
       "source_url": "https://shopify.dev/docs/apps",
-      "source_note": "Official portal for Shopify app development, scaffolding, and authentication.",
-      "retrieved_at": "2026-11-01T18:35:00Z"
+      "source_note": "Landing page for app development.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z",
+      "test_id": "T1"
+    },
+    {
+      "id": "E2",
+      "claim": "By default apps see only the last 60 days of orders; read_all_orders must be requested in the Partner Dashboard; protected customer data is not returned from non-development stores until the app is approved.",
+      "tag": "official",
+      "source_url": "https://shopify.dev/api/admin/access-scopes",
+      "source_note": "Shopify's access scopes reference.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E3",
+      "claim": "A Shopify staff reply separates custom apps created from a Partner account and from a merchant account; merchant-created custom apps on Basic and Starter plans cannot access protected customer data.",
+      "tag": "community",
+      "source_url": "https://community.shopify.dev/t/failing-to-create-webhooks-with-apps-created-in-the-dev-dashboard/27109",
+      "source_note": "Shopify developer community thread.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E4",
+      "claim": "Third-party integration docs say a Shopify Partner account is needed to connect via OAuth, and approval is needed for protected customer data on published public apps.",
+      "tag": "community",
+      "source_url": "https://docs.workato.com/connectors/shopify",
+      "source_note": "Workato's Shopify connector documentation.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E5",
+      "claim": "Third-party docs report that approval for the read_all_orders scope typically takes two to four weeks.",
+      "tag": "community",
+      "source_url": "https://docs.workato.com/en/data-orchestration/data-pipeline-recipe/configure-shopify",
+      "source_note": "Workato's Shopify data pipeline documentation.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E6",
+      "claim": "No official Shopify App Store review duration was found in the sources checked.",
+      "tag": "unknown",
+      "source_url": null,
+      "source_note": "Searched Shopify's developer docs and community.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
     }
   ],
   "tests": [
@@ -200,5 +304,16 @@
       "observed": "Status 200, returned scaffold instructions and links."
     }
   ],
-  "unknowns": []
+  "unknowns": [
+    {
+      "question": "How long does Shopify App Store review take?",
+      "why_unknown": "No official duration was found.",
+      "how_to_resolve": "Check Shopify's app review requirements or ask Partner support."
+    },
+    {
+      "question": "What is the exact OAuth flow and token handling for Dev Dashboard apps?",
+      "why_unknown": "The authentication docs were not retrieved in this review.",
+      "how_to_resolve": "Read Shopify's authentication and authorization documentation."
+    }
+  ]
 }

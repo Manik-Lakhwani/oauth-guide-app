@@ -1,17 +1,18 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
   "app": {
     "name": "Slack",
     "website": "https://slack.com",
     "developer_docs_url": "https://api.slack.com/apps",
     "generated_at": "2026-11-01T18:24:35.026Z",
-    "oauth_supported": "yes"
+    "oauth_supported": "yes",
+    "reviewed_at": "2026-11-02",
+    "review_note": "Checked against provider sources on 2 November 2026; corrections are listed in VERIFICATION.md."
   },
   "summary": {
-    "headline": "Create a Slack app via the developer portal, configure OAuth redirect URLs, and request scopes to enable user installation.",
-    "type": "self_serve",
+    "headline": "Create a Slack app, set redirect URLs and scopes, and install it in your workspace right away. Apps outside the Slack Marketplace get much tighter rate limits on reading channel history.",
+    "type": "review_gated",
     "difficulty": "moderate",
-    "type_note": "Test mode is self-serve; production public distribution may need review",
+    "type_note": "Building and installing in your own workspace is self-serve. Marketplace approval is needed for normal rate limits on conversation history and for listing publicly.",
     "difficulty_factors": [
       {
         "factor": "registration",
@@ -24,17 +25,18 @@
       {
         "factor": "review",
         "score": 1,
-        "reason": "Distributing publicly or requesting sensitive scopes may require Slack app directory review, but internal/workspace apps are self-serve.",
+        "reason": "Marketplace submission is reviewed; internal and workspace apps are not.",
         "evidence_ids": [
-          "E2"
+          "E5",
+          "E6"
         ]
       },
       {
         "factor": "wait_time",
         "score": 1,
-        "reason": "No official review wait time published for general apps; workspace distribution is instant.",
+        "reason": "Workspace installation is quick, but no review turnaround for the Marketplace is published.",
         "evidence_ids": [
-          "E2"
+          "E6"
         ]
       },
       {
@@ -55,16 +57,19 @@
       }
     ],
     "setup_effort": {
-      "estimate": "30-45 minutes",
-      "basis": "community"
+      "estimate": "About 30-45 minutes (estimate)",
+      "basis": "inferred",
+      "evidence_ids": [
+        "E1"
+      ]
     },
     "approval_wait": {
-      "label": "Instant for workspace installation; variable if submitting to App Directory",
+      "label": "Marketplace review time not published; own-workspace use needs no approval (not independently checked)",
       "min_days": null,
       "max_days": null,
-      "basis": "official",
+      "basis": "unknown",
       "evidence_ids": [
-        "E2"
+        "E6"
       ]
     },
     "can_start_today": {
@@ -72,16 +77,34 @@
       "reason": "You can view documentation and the app creation portal immediately, but logging in and creating credentials requires a human user account."
     },
     "confidence": {
-      "level": "high",
-      "reason": "Verified official endpoints and developer portal existence via public probes."
+      "level": "medium",
+      "reason": "OAuth setup and rate-limit changes come from Slack's documentation and changelog; Marketplace timing and exact scope definitions were not found."
     }
   },
   "blockers": [
     {
-      "title": "Login Required for App Creation",
-      "severity": "blocking",
-      "detail": "Creating and managing Slack apps requires authenticating with a Slack user account.",
-      "workaround": "Log in manually to the Slack API dashboard.",
+      "title": "Lower rate limits for apps outside the Marketplace",
+      "severity": "slows_you_down",
+      "detail": "Slack's changelog says apps not approved for the Marketplace are limited to 1 request per minute and 15 objects per request on conversations.history and conversations.replies, for new apps from 29 May 2025 and later for existing unlisted installs.",
+      "workaround": "Get Marketplace approval, or avoid these two methods if your agent can.",
+      "evidence_ids": [
+        "E4"
+      ]
+    },
+    {
+      "title": "Marketplace submission requires active workspace installs",
+      "severity": "slows_you_down",
+      "detail": "Slack's changelog describes a minimum number of active-workspace installs before an app can be submitted (10, later reduced to 5). The current number was not confirmed.",
+      "workaround": "Check the current requirement in the Marketplace guidelines before planning a launch.",
+      "evidence_ids": [
+        "E5"
+      ]
+    },
+    {
+      "title": "You must sign in to create an app",
+      "severity": "minor",
+      "detail": "Creating and managing Slack apps needs a Slack user account.",
+      "workaround": "Sign in to the Slack API site with your account.",
       "evidence_ids": [
         "E2"
       ]
@@ -148,6 +171,18 @@
       "evidence_ids": [
         "E1"
       ]
+    },
+    {
+      "order": 4,
+      "stage": "review_submission",
+      "title": "If you distribute to other workspaces, prepare a Marketplace submission",
+      "action": "Check Slack's current Marketplace requirements (including the minimum active installs) and submit through your app settings. Review time is not published.",
+      "owner": "you",
+      "agent_status": "agent_can_draft",
+      "evidence_ids": [
+        "E5",
+        "E6"
+      ]
     }
   ],
   "scopes": [
@@ -157,7 +192,7 @@
       "triggers_extra_review": "no",
       "recommended_for_common_use": true,
       "evidence_ids": [
-        "E3"
+        "E1"
       ]
     },
     {
@@ -173,8 +208,8 @@
   "if_stuck": {
     "common_rejection_reasons": [
       {
-        "reason": "Invalid redirect URI mismatch during OAuth handshake",
-        "fix": "Ensure the redirect URL configured in the Slack app dashboard matches the exact callback URL sent by your application.",
+        "reason": "Redirect URI mismatch during the OAuth handshake (an error, not a review rejection)",
+        "fix": "Make the redirect URL in the Slack app dashboard match the callback URL your application sends exactly.",
         "evidence_ids": [
           "E1"
         ]
@@ -224,12 +259,36 @@
     },
     {
       "id": "E3",
-      "claim": "Authorize endpoint accepts client_id and scope parameters.",
+      "claim": "A request to the authorize endpoint with a fake client id returned HTTP 200. This does not show that its parameters were accepted.",
       "tag": "tested",
       "source_url": "https://slack.com/oauth/v2/authorize?client_id=fake_client_id_123&scope=channels:read",
       "source_note": "Probe returned 200 OK.",
       "test_id": "T4",
       "retrieved_at": "2026-11-01T18:24:35.026Z"
+    },
+    {
+      "id": "E4",
+      "claim": "Apps not approved for the Slack Marketplace face lower rate limits on conversations.history and conversations.replies (1 request per minute, 15 objects per request).",
+      "tag": "official",
+      "source_url": "https://docs.slack.dev/changelog/2025/05/29/rate-limit-changes-for-non-marketplace-apps",
+      "source_note": "Slack developer changelog entry on rate limit changes for non-Marketplace apps.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E5",
+      "claim": "Slack's changelog states Marketplace submissions required at least 10 active-workspace installs, and a later entry reduces this to 5. The current requirement was not confirmed.",
+      "tag": "official",
+      "source_url": "https://api.slack.com/changelog/20240315",
+      "source_note": "Slack changelog on Marketplace entry requirements.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E6",
+      "claim": "No published review turnaround for the Slack Marketplace was found in the sources checked.",
+      "tag": "unknown",
+      "source_url": null,
+      "source_note": "Searched Slack's docs and changelog.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
     }
   ],
   "tests": [
@@ -262,8 +321,8 @@
       "description": "Probe authorize endpoint with dummy client ID",
       "method": "authorize_endpoint_dummy_client",
       "request": "GET https://slack.com/oauth/v2/authorize?client_id=fake_client_id_123&scope=channels:read",
-      "result": "confirmed_docs",
-      "observed": "200 OK response from Slack authorize page"
+      "result": "inconclusive",
+      "observed": "200 OK from the Slack authorize page for a fake client id. Does not show how parameters were handled."
     }
   ],
   "unknowns": [
@@ -271,6 +330,16 @@
       "question": "What is the exact review duration if submitting to the Slack App Directory publicly?",
       "why_unknown": "No fixed timeline is publicly guaranteed by Slack for directory reviews.",
       "how_to_resolve": "Submit an app for review through the Slack app management dashboard and monitor response times."
+    },
+    {
+      "question": "What is the exact definition of each scope listed?",
+      "why_unknown": "The scope reference was not retrieved in this review.",
+      "how_to_resolve": "Check Slack's scopes reference for each scope you request."
+    },
+    {
+      "question": "What is the current minimum number of active installs for Marketplace submission?",
+      "why_unknown": "Changelog entries differ and the current figure was not confirmed.",
+      "how_to_resolve": "Check Slack's current Marketplace guidelines."
     }
   ]
 }

@@ -4,85 +4,111 @@
     "website": "https://www.workday.com",
     "developer_docs_url": "https://developer.workday.com/",
     "generated_at": "2026-11-01T18:46:16.088Z",
-    "oauth_supported": "yes"
+    "oauth_supported": "yes",
+    "reviewed_at": "2026-11-02",
+    "review_note": "Checked against provider sources on 2 November 2026; corrections are listed in VERIFICATION.md. The earlier steps described Workday's integration app lifecycle, which is not OAuth client registration, and were replaced. Steps now come from third-party integration docs because Workday's own docs are behind a login."
   },
   "summary": {
-    "headline": "Workday requires building integration apps via the Developer Console and App Hub, using tenant-bound OAuth authentication rather than public self-serve app registration.",
+    "headline": "Workday OAuth clients are registered by an administrator inside each customer's tenant; no self-serve app or Workday approval step was found.",
     "type": "tenant_bound",
-    "type_note": "Workday integrations and OAuth setups are bound to specific Workday tenants, implementation environments, and company administration rather than a public developer app store.",
-    "difficulty": "gated",
+    "type_note": "Each customer's tenant administrator registers an API client and sends you a client id and secret. Sources are third-party integration docs.",
+    "difficulty": "hard",
     "difficulty_factors": [
       {
         "factor": "registration",
         "score": 2,
-        "reason": "Requires a Workday Developer account and access to the Developer Console and App Hub.",
+        "reason": "A tenant administrator must register the API client inside the customer's tenant.",
         "evidence_ids": [
           "E2",
-          "E3"
+          "E4"
         ]
       },
       {
         "factor": "review",
-        "score": 2,
-        "reason": "Apps must be promoted through Implementation, Sandbox, and Production release cycles managed by company administrators.",
+        "score": 0,
+        "reason": "No Workday review or approval step was found; the customer's own security setup applies.",
         "evidence_ids": [
-          "E3"
+          "E4",
+          "E6"
         ]
       },
       {
         "factor": "wait_time",
         "score": 2,
-        "reason": "No published timeline; depends on organizational tenant provisioning and review.",
+        "reason": "Depends on the customer's administrator; no timeline is published.",
         "evidence_ids": [
-          "E3"
+          "E6"
         ]
       },
       {
         "factor": "cost_or_access",
         "score": 2,
-        "reason": "Requires access to Workday tenants (Implementation, Sandbox, Production) via enterprise partnership or customer relationship.",
+        "reason": "You need access to a customer's Workday tenant through the customer.",
         "evidence_ids": [
-          "E3"
+          "E4"
         ]
       },
       {
         "factor": "human_dependency",
         "score": 2,
-        "reason": "Production deployment requires tenant administrators to install and configure the app.",
+        "reason": "The customer's administrator must enable OAuth, register the client, and set security policies.",
         "evidence_ids": [
-          "E3"
+          "E3",
+          "E4"
         ]
       }
     ],
     "setup_effort": {
-      "estimate": "Multiple days of enterprise integration setup",
-      "basis": "official",
+      "estimate": "Not published; depends on the customer's Workday administrator",
+      "basis": "unknown",
       "evidence_ids": [
-        "E3"
+        "E6"
       ]
     },
     "approval_wait": {
-      "label": "Unknown",
+      "label": "No Workday approval step found; depends on the customer's administrator",
       "min_days": null,
       "max_days": null,
-      "basis": "unknown",
-      "evidence_ids": []
+      "basis": "inferred",
+      "evidence_ids": [
+        "E4"
+      ]
     },
     "can_start_today": {
-      "answer": "partly",
-      "reason": "You can access public developer documentation and llms.txt today, but creating apps requires a Workday developer account and tenant access."
+      "answer": "no",
+      "reason": "Registering an API client needs administrator access in a Workday tenant, usually a customer's. Without one you can only read documentation."
     },
     "confidence": {
-      "level": "high",
-      "reason": "Official developer site structure and integration app lifecycle documentation were directly probed and verified."
+      "level": "low",
+      "reason": "Workday's own documentation is behind a login. The steps come from third-party integration docs that agree with each other."
     }
   },
   "blockers": [
     {
-      "title": "Tenant and Enterprise Bound Access",
+      "title": "Registration happens inside each customer's tenant",
       "severity": "blocking",
-      "detail": "Workday does not use generic consumer OAuth app registration; apps are built and promoted across specific Workday tenant environments (Implementation, Sandbox, Production).",
-      "workaround": "Obtain access through a Workday customer or partner developer program.",
+      "detail": "Per integration docs, each customer's Workday administrator registers an API client in their own tenant and gives you a separate client id and secret.",
+      "workaround": "Send the customer's administrator the request message below.",
+      "evidence_ids": [
+        "E2",
+        "E4"
+      ]
+    },
+    {
+      "title": "Two permission layers",
+      "severity": "slows_you_down",
+      "detail": "Functional-area scopes on the API client and domain security policies for the authorizing account's security group are separate. A correct scope is not enough.",
+      "workaround": "Ask the administrator to add the needed domain security policies and activate pending changes.",
+      "evidence_ids": [
+        "E3",
+        "E4"
+      ]
+    },
+    {
+      "title": "OAuth 2.0 must be enabled in the tenant",
+      "severity": "slows_you_down",
+      "detail": "The tenant's security setup must have OAuth 2.0 enabled before an API client can be registered.",
+      "workaround": "Ask the administrator to enable it under Edit Tenant Setup - Security.",
       "evidence_ids": [
         "E3"
       ]
@@ -92,60 +118,136 @@
     {
       "order": 1,
       "stage": "setup",
-      "title": "Create a Workday Developer Account",
-      "action": "Sign up for a Workday developer account to access the Developer Console and App Hub.",
-      "url": "https://developer.workday.com/",
+      "title": "Involve the customer's Workday administrator",
+      "action": "Ask a Workday administrator for the customer's tenant to do the registration steps below. Send them the request message from this guide.",
       "owner": "you",
-      "agent_status": "human_only",
-      "why_human_only": "Requires creating an authenticated developer account on Workday's gated platform.",
+      "agent_status": "agent_can_draft",
       "evidence_ids": [
-        "E2"
+        "E4"
       ]
     },
     {
       "order": 2,
       "stage": "setup",
-      "title": "Build Integration App",
-      "action": "Use Workday Orchestrate for Integrations and the App Hub to create your integration app and save your code.",
-      "url": "https://developer.workday.com/",
-      "owner": "you",
+      "title": "Enable OAuth 2.0 in the tenant",
+      "action": "In Workday, search for Edit Tenant Setup - Security and make sure OAuth 2.0 is enabled.",
+      "owner": "your_admin",
       "agent_status": "human_only",
-      "why_human_only": "Requires developer console access and proprietary low-code orchestration builder tools.",
+      "why_human_only": "Needs tenant administrator access.",
       "evidence_ids": [
-        "E2",
         "E3"
       ]
     },
     {
       "order": 3,
-      "stage": "testing",
-      "title": "Promote and Test in Implementation / Sandbox",
-      "action": "Promote your app from Implementation Release to Sandbox Release to test your integrations against preview tenants.",
-      "url": "https://developer.workday.com/",
-      "owner": "you",
+      "stage": "setup",
+      "title": "Register an API client",
+      "action": "Run Register API Client (authorization code grant) for user-based access, or Register API Client for Integrations for integration system user flows. Save the client id and secret; the secret is shown once.",
+      "fields": [
+        {
+          "name": "Client Name",
+          "guidance": "A descriptive name, for example {{app_name}}"
+        },
+        {
+          "name": "Client Grant Type",
+          "guidance": "Authorization Code Grant for user-based OAuth"
+        },
+        {
+          "name": "Access Token Type",
+          "guidance": "Bearer"
+        },
+        {
+          "name": "Redirection URI",
+          "guidance": "{{redirect_uri}}"
+        },
+        {
+          "name": "Scope (Functional Areas)",
+          "guidance": "Only the functional areas you need, such as System, Human Resources or Staffing"
+        },
+        {
+          "name": "Non-Expiring Refresh Tokens",
+          "guidance": "Enable it if you will store a refresh token; integration docs say refresh tokens must not expire"
+        }
+      ],
+      "owner": "your_admin",
+      "agent_status": "agent_can_draft",
+      "evidence_ids": [
+        "E2",
+        "E3",
+        "E5"
+      ]
+    },
+    {
+      "order": 4,
+      "stage": "setup",
+      "title": "Grant security policies",
+      "action": "If you use an integration system user, create the user and a security group, add the domain security policies your scopes need, and activate pending security policy changes.",
+      "owner": "your_admin",
       "agent_status": "human_only",
-      "why_human_only": "Requires access to provisioned Workday Sandbox and Implementation tenants.",
+      "why_human_only": "Needs tenant security administrator access.",
       "evidence_ids": [
         "E3"
       ]
     },
     {
-      "order": 4,
-      "stage": "review_submission",
-      "title": "Release to Production",
-      "action": "Promote your app to Production Release so your Company Administrator can install and configure it on Production tenants.",
-      "url": "https://developer.workday.com/",
+      "order": 5,
+      "stage": "testing",
+      "title": "Collect endpoints and test authorization",
+      "action": "Get the tenant-specific authorize, token and REST hosts from the administrator, then test the authorization code flow.",
       "owner": "you",
-      "agent_status": "human_only",
-      "why_human_only": "Requires company administrator permissions and production tenant access.",
+      "agent_status": "agent_can_draft",
+      "evidence_ids": [
+        "E4"
+      ]
+    }
+  ],
+  "scopes": [
+    {
+      "scope": "System",
+      "purpose": "Example functional-area scope used in integration docs (Alteryx lists system).",
+      "triggers_extra_review": "unknown",
+      "recommended_for_common_use": false,
+      "evidence_ids": [
+        "E5"
+      ]
+    },
+    {
+      "scope": "Human Resources",
+      "purpose": "Example functional-area scope for worker data (named in Nango's docs).",
+      "triggers_extra_review": "unknown",
+      "recommended_for_common_use": false,
+      "evidence_ids": [
+        "E3"
+      ]
+    },
+    {
+      "scope": "Staffing",
+      "purpose": "Example functional-area scope (named in Nango's docs).",
+      "triggers_extra_review": "unknown",
+      "recommended_for_common_use": false,
       "evidence_ids": [
         "E3"
       ]
     }
   ],
-  "scopes": [],
   "if_stuck": {
-    "common_rejection_reasons": [],
+    "common_rejection_reasons": [
+      {
+        "reason": "Requests fail even though the scope is on the API client",
+        "fix": "Ask the administrator to add domain security policies to the security group and activate pending changes.",
+        "evidence_ids": [
+          "E3",
+          "E4"
+        ]
+      },
+      {
+        "reason": "Refresh tokens stop working",
+        "fix": "Enable non-expiring refresh tokens on the API client.",
+        "evidence_ids": [
+          "E2"
+        ]
+      }
+    ],
     "contacts": [
       {
         "label": "Workday Developer Forum",
@@ -153,24 +255,26 @@
       }
     ],
     "message_template": {
-      "subject": "Inquiry regarding Workday Integration App Deployment and OAuth Setup",
-      "body": "Hello Workday Support,\n\nWe are developing an integration app on the Workday Developer Platform and need guidance on finalizing our tenant authentication and production promotion.\n\nThank you,\n{{developer_name}}"
+      "subject": "Request: register a Workday API client for {{app_name}}",
+      "body": "Hello,\n\nWe would like to connect {{app_name}} to your Workday tenant with OAuth 2.0. Could you register an API client (Register API Client) with:\n- Client name: {{app_name}}\n- Grant type: Authorization Code Grant\n- Access token type: Bearer\n- Redirection URI: {{redirect_uri}}\n- Scopes (functional areas): {{scopes}}\n\nPlease also add the needed domain security policies for the authorizing account and send us the client ID, client secret, and your tenant's authorize, token and REST endpoints.\n\nThank you,\n{{developer_name}}"
     }
   },
   "agent_vs_you": {
     "agent_did": [
-      "Probed developer.workday.com and retrieved llms.txt index",
-      "Verified official developer documentation structure and integration app lifecycle guidelines"
+      "Fetched developer.workday.com/llms.txt (200 OK)."
     ],
-    "agent_can_do_next": [],
+    "agent_can_do_next": [
+      "Draft the request message and field values for the customer's administrator.",
+      "Draft the authorization URL and token exchange once the tenant's hosts are known."
+    ],
     "you_must": [
       {
-        "task": "Log into the Workday Developer Console",
-        "reason": "Console access and app building require authenticated developer credentials."
+        "task": "Get a customer Workday administrator to register the API client",
+        "reason": "Registration happens inside the customer's tenant."
       },
       {
-        "task": "Provision Workday tenant environments",
-        "reason": "Testing and deploying integration apps require access to Implementation and Sandbox tenants."
+        "task": "Store the client secret securely",
+        "reason": "It is shown once."
       }
     ]
   },
@@ -186,19 +290,43 @@
     },
     {
       "id": "E2",
-      "claim": "Getting Started with Integration Apps details building secure integrations using Workday Orchestrate for Integrations.",
-      "tag": "official",
-      "source_url": "https://developer.workday.com/doc/GUID-1293c9bb-ea02-48cd-a523-254b5060b3a6-enHYPHENus.md",
-      "source_note": "Describes building integration apps and configuring Integration System Users (ISUs).",
-      "retrieved_at": "2026-11-01T18:46:16.088Z"
+      "claim": "A tenant administrator registers the API client with Register API Client: client name, authorization code grant, bearer token, redirect URI; the secret is shown once; refresh tokens must be non-expiring if used.",
+      "tag": "community",
+      "source_url": "https://nango.dev/docs/api-integrations/workday-oauth/how-to-register-your-own-workday-oauth-app",
+      "source_note": "Nango's guide to registering your own Workday OAuth app.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
     },
     {
       "id": "E3",
-      "claim": "Integration App Lifecycle documentation explains promotion levels: Implementation Release, Sandbox Release, and Production Release.",
-      "tag": "official",
-      "source_url": "https://developer.workday.com/doc/GUID-ff44b82e-ff86-46d5-aeab-7a694bd8a974.md",
-      "source_note": "Details promoting apps through promotion levels to run on corresponding tenant environments.",
-      "retrieved_at": "2026-11-01T18:46:16.088Z"
+      "claim": "OAuth 2.0 must be enabled in tenant security setup; scopes are functional areas and the account also needs matching domain security policies.",
+      "tag": "community",
+      "source_url": "https://nango.dev/docs/api-integrations/workday-cc/connect",
+      "source_note": "Nango's Workday client credentials guide.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E4",
+      "claim": "Each customer's administrator registers an API client in their own tenant and hands over a separate client id and secret; there are two permission layers; hosts are tenant-specific.",
+      "tag": "community",
+      "source_url": "https://docs.unified.to/skills/workday-oauth-app/SKILL.md",
+      "source_note": "Unified.to's Workday OAuth notes, which quote Workday's documentation.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E5",
+      "claim": "The Register API Client form includes grant type, token type, redirect URI, scope selection and an option to include Workday-owned scope; the example scope is system.",
+      "tag": "community",
+      "source_url": "https://help.alteryx.com/aac/en/platform/connections/configure-connectivity/enable-oauth-2-0-authentication/oauth-2-0-for-workday.html",
+      "source_note": "Alteryx documentation for OAuth 2.0 with Workday.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E6",
+      "claim": "Workday's official OAuth client registration documentation could not be retrieved, and no review duration was found.",
+      "tag": "unknown",
+      "source_url": null,
+      "source_note": "Workday's documentation is behind a login.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
     }
   ],
   "tests": [
@@ -213,9 +341,19 @@
   ],
   "unknowns": [
     {
-      "question": "What are the exact OAuth scope names and parameters required for external API calls?",
-      "why_unknown": "Detailed API reference pages require specific docId fetching or authenticated developer console access.",
-      "how_to_resolve": "Log into the Workday Developer Console and review API reference documentation."
+      "question": "What are the exact scope names for the functional areas your integration needs?",
+      "why_unknown": "Only example names appear in third-party docs.",
+      "how_to_resolve": "Check the Workday REST API reference in the customer's tenant."
+    },
+    {
+      "question": "Does Workday offer a partner or sandbox tenant for developers without a customer?",
+      "why_unknown": "Not found in the sources checked.",
+      "how_to_resolve": "Ask Workday's partner team."
+    },
+    {
+      "question": "Do Workday's own docs match these third-party steps?",
+      "why_unknown": "Workday's documentation requires a login.",
+      "how_to_resolve": "Have a customer administrator confirm the steps."
     }
   ]
 }

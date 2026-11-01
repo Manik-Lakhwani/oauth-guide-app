@@ -4,12 +4,14 @@
     "website": "https://github.com",
     "developer_docs_url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app",
     "generated_at": "2026-11-01T18:17:17.509Z",
-    "oauth_supported": "yes"
+    "oauth_supported": "yes",
+    "reviewed_at": "2026-11-02",
+    "review_note": "Checked against provider sources on 2 November 2026; corrections are listed in VERIFICATION.md."
   },
   "summary": {
-    "headline": "Developers can instantly self-serve register a GitHub OAuth App through their account settings without any mandatory review gating.",
+    "headline": "Registering a GitHub OAuth App is instant and self-serve, but GitHub prefers GitHub Apps, and organization owners can restrict OAuth apps.",
     "type": "self_serve",
-    "type_note": "OAuth App registration is completely self-serve via developer settings, with no verification or review process required for basic functionality.",
+    "type_note": "Registration is self-serve with no GitHub review. If an organization enforces an application policy, an organization owner must authorize your OAuth app for that organization.",
     "difficulty": "easy",
     "difficulty_factors": [
       {
@@ -23,9 +25,10 @@
       {
         "factor": "review",
         "score": 0,
-        "reason": "No review process or approval gate required to use OAuth apps.",
+        "reason": "GitHub does not review OAuth apps for registration, but organizations can require owner approval before an app can access their data.",
         "evidence_ids": [
-          "E1"
+          "E1",
+          "E4"
         ]
       },
       {
@@ -39,7 +42,7 @@
       {
         "factor": "cost_or_access",
         "score": 0,
-        "reason": "Free to create and register up to 100 OAuth apps under a personal or organization account.",
+        "reason": "No fee is mentioned in the registration documentation.",
         "evidence_ids": [
           "E1"
         ]
@@ -47,23 +50,28 @@
       {
         "factor": "human_dependency",
         "score": 1,
-        "reason": "Requires human login to GitHub to create the app and obtain client credentials.",
+        "reason": "You must log in to create the app and get credentials; organization owners may need to approve it.",
         "evidence_ids": [
-          "E1"
+          "E1",
+          "E4"
         ]
       }
     ],
     "setup_effort": {
-      "estimate": "10-15 minutes",
-      "basis": "official"
+      "estimate": "About 10-15 minutes (estimate)",
+      "basis": "inferred",
+      "evidence_ids": [
+        "E1"
+      ]
     },
     "approval_wait": {
-      "label": "None",
+      "label": "None for registration; an organization owner may need to approve use on organization data",
       "min_days": 0,
       "max_days": 0,
       "basis": "official",
       "evidence_ids": [
-        "E1"
+        "E1",
+        "E4"
       ]
     },
     "can_start_today": {
@@ -71,14 +79,45 @@
       "reason": "Registration is fully self-service and available immediately upon logging into GitHub."
     },
     "confidence": {
-      "level": "high",
-      "reason": "Verified via official GitHub Developer documentation and public probes."
+      "level": "medium",
+      "reason": "Registration steps and scopes come from GitHub's docs, but the authorize-endpoint probe was inconclusive and some limits (such as how many OAuth apps one account can create) could not be confirmed."
     }
   },
-  "blockers": [],
+  "blockers": [
+    {
+      "title": "Organization owners may need to approve your app",
+      "severity": "slows_you_down",
+      "detail": "When an organization has an application access policy, only an organization owner can authorize an OAuth app for that organization. Your users who belong to such organizations may be unable to grant access until an owner approves.",
+      "workaround": "Ask the user's organization owner to approve the app, and explain which scopes you request.",
+      "evidence_ids": [
+        "E4"
+      ]
+    },
+    {
+      "title": "GitHub recommends GitHub Apps over OAuth apps",
+      "severity": "minor",
+      "detail": "GitHub says GitHub Apps are generally preferred: fine-grained permissions, short-lived tokens, and rate limits that scale. OAuth apps use broad scopes and the user's rate limit.",
+      "workaround": "Decide between the two before registering. This guide covers OAuth apps.",
+      "evidence_ids": [
+        "E3"
+      ]
+    }
+  ],
   "steps": [
     {
       "order": 1,
+      "stage": "setup",
+      "title": "Decide: OAuth app or GitHub App",
+      "action": "GitHub generally prefers GitHub Apps for new integrations (fine-grained permissions, short-lived tokens, scalable rate limits). This guide covers OAuth apps; decide before you register.",
+      "url": "https://docs.github.com/en/developers/apps/getting-started-with-apps/differences-between-github-apps-and-oauth-apps",
+      "owner": "you",
+      "agent_status": "agent_can_draft",
+      "evidence_ids": [
+        "E3"
+      ]
+    },
+    {
+      "order": 2,
       "stage": "setup",
       "title": "Navigate to Developer Settings",
       "action": "Log in to GitHub, click your profile picture in the upper-right corner, select Settings, click Developer settings in the left sidebar, and then click OAuth apps.",
@@ -91,7 +130,7 @@
       ]
     },
     {
-      "order": 2,
+      "order": 3,
       "stage": "setup",
       "title": "Register New OAuth App",
       "action": "Click 'New OAuth App' (or 'Register a new application') and fill in your application details.",
@@ -118,7 +157,7 @@
       ]
     },
     {
-      "order": 3,
+      "order": 4,
       "stage": "setup",
       "title": "Retrieve Credentials",
       "action": "Copy the generated Client ID and generate a new Client Secret, then store them securely in your app environment.",
@@ -128,16 +167,29 @@
       "evidence_ids": [
         "E1"
       ]
+    },
+    {
+      "order": 5,
+      "stage": "review_submission",
+      "title": "If a user's organization restricts apps, request owner approval",
+      "action": "Ask the organization owner to approve your OAuth app under the organization's third-party application settings, then retry authorization.",
+      "owner": "your_admin",
+      "agent_status": "human_only",
+      "why_human_only": "Only an organization owner can approve the app for that organization.",
+      "evidence_ids": [
+        "E4"
+      ]
     }
   ],
   "scopes": [
     {
       "scope": "repo",
-      "purpose": "Provides full control of private and public repositories, including reading and writing code, commit status, issues, and pull requests.",
+      "purpose": "Broad access to repositories, including issues, pull requests and anything repository-owned. OAuth apps cannot request narrower repository permissions, so ask for this only if you need it.",
       "triggers_extra_review": "no",
-      "recommended_for_common_use": true,
+      "recommended_for_common_use": false,
       "evidence_ids": [
-        "E2"
+        "E2",
+        "E3"
       ]
     },
     {
@@ -151,7 +203,15 @@
     }
   ],
   "if_stuck": {
-    "common_rejection_reasons": [],
+    "common_rejection_reasons": [
+      {
+        "reason": "A user in an organization with an app access policy cannot authorize your app",
+        "fix": "Ask an organization owner to approve the app for the organization.",
+        "evidence_ids": [
+          "E4"
+        ]
+      }
+    ],
     "contacts": [
       {
         "label": "GitHub Support",
@@ -169,9 +229,8 @@
   },
   "agent_vs_you": {
     "agent_did": [
-      "Probed official GitHub OAuth creation documentation and confirmed registration steps.",
-      "Probed OAuth scopes documentation.",
-      "Probed authorize endpoint redirect behavior."
+      "Opened GitHub's OAuth app creation and scopes documentation (both loaded).",
+      "Sent an authorize request with a fake client id; it redirected to login, which does not show how invalid client ids are handled."
     ],
     "agent_can_do_next": [
       "Draft environment variable templates for CLIENT_ID and CLIENT_SECRET.",
@@ -204,6 +263,22 @@
       "source_url": "https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps",
       "source_note": "Official documentation detailing available OAuth scopes.",
       "retrieved_at": "2026-11-01T18:17:17.509Z"
+    },
+    {
+      "id": "E3",
+      "claim": "GitHub generally prefers GitHub Apps over OAuth apps; OAuth apps need the repo scope for issues and pull requests, and tokens use the user's rate limit.",
+      "tag": "official",
+      "source_url": "https://docs.github.com/en/developers/apps/getting-started-with-apps/differences-between-github-apps-and-oauth-apps",
+      "source_note": "GitHub's comparison of GitHub Apps and OAuth apps.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
+    },
+    {
+      "id": "E4",
+      "claim": "When an organization application policy is active, only an organization owner can authorize an OAuth app for the organization.",
+      "tag": "official",
+      "source_url": "https://docs.github.com/en/developers/apps/getting-started-with-apps/differences-between-github-apps-and-oauth-apps",
+      "source_note": "Same comparison page, section on who can install or authorize.",
+      "retrieved_at": "2026-11-02T00:00:00.000Z"
     }
   ],
   "tests": [
@@ -220,8 +295,8 @@
       "description": "Probe GitHub authorize endpoint with dummy client ID",
       "method": "authorize_endpoint_dummy_client",
       "request": "GET https://github.com/login/oauth/authorize?client_id=fake_client_id",
-      "result": "confirmed_docs",
-      "observed": "Status 302 redirecting to login page."
+      "result": "inconclusive",
+      "observed": "Status 302 redirecting to the login page. This happens whatever the client id is, so it does not confirm how invalid client ids are handled."
     },
     {
       "id": "T3",
@@ -232,5 +307,16 @@
       "observed": "Status 200 with scopes list."
     }
   ],
-  "unknowns": []
+  "unknowns": [
+    {
+      "question": "Is there a limit on how many OAuth apps one account or organization can create?",
+      "why_unknown": "An earlier version of this guide stated 100, but no source retrieved supports it.",
+      "how_to_resolve": "Check GitHub's developer settings page or documentation."
+    },
+    {
+      "question": "Do your target users' organizations enforce an OAuth application access policy?",
+      "why_unknown": "It differs for each organization.",
+      "how_to_resolve": "Ask the organization owners, or test with a user inside such an organization."
+    }
+  ]
 }
